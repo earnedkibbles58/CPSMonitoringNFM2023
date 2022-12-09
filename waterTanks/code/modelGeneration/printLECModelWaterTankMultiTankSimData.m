@@ -27,7 +27,7 @@ for j=1:numTanks-1
         fprintf(fid, '    [] currN=0&sink=0&tankFlag=%i&wlid%i=%i -> ',j,j,wlid);
 %         fprintf(fid, "%i:(wlidPer%i'=0)&(tankFlag'=%i) + %i:(wlidPer%i'=wlidMax)&(tankFlag'=%i) + ",LECLowerProb,j,j+1,LECUpperProb,j,j+1);
         for i=1:numBins
-            nextwl = wl+i-(numBins+1)/2;
+            nextwl = wl+i*deltawl-deltawl*(numBins+1)/2;
             nextwlid = ceil(nextwl/deltawl);
             nextwlid = max(0,nextwlid);
             nextwlid = min(wlidMax-1,nextwlid);
