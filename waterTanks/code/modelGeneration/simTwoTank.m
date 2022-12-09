@@ -1,7 +1,7 @@
-seed = 23443;
+seed = 7967;
 rng(seed);
 
-numTrials = 100;
+numTrials = 1;
 
 unsafes = 0;
 
@@ -26,7 +26,7 @@ for j=1:numTrials
     ctrlThreshLower = 20;
     ctrlThreshUpper = 80;
     
-    numSteps = 50;
+    numSteps = 300;%50;
     contAction1 = 0;
     contAction2 = 0;
     
@@ -238,37 +238,6 @@ for j=1:numTrials
 end
 unsafes
 unsafes/numTrials
-
-
-maxPerErr = max(abs(allPerErrs));
-
-figure(5)
-clf
-histogram(allPerErrs,-maxPerErr:filter_wl_disc:maxPerErr)
-
-
-% print perception model and save data
-err_dict = containers.Map(0,0);
-
-for i=1:length(allPerErrs)
-    bin_ind = round(allPerErrs(i));
-    if isKey(err_dict,bin_ind)
-        err_dict(bin_ind) = err_dict(bin_ind) + 1/length(allPerErrs);
-    else
-        err_dict(bin_ind) = 1/length(allPerErrs);
-    end
-    
-end
-
-
-thisKeys = err_dict.keys;
-for i=1:length(thisKeys)
-    thisKey = thisKeys(i);
-    thisValue = err_dict(thisKey{1});
-    [thisKey{1} thisValue]
-    
-    
-end
 
 
 
