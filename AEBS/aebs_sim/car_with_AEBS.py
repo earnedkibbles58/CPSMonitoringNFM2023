@@ -122,6 +122,10 @@ class World:
         self.car_dist = round((self.car_dist - (self.car_vel-self.obst_vel)*self.time_step)/self.dist_disc)*self.dist_disc
         self.car_vel = round((self.car_vel + command*self.time_step)/self.vel_disc)*self.vel_disc
 
+        # no rounding
+        # self.car_dist = (self.car_dist - (self.car_vel-self.obst_vel)*self.time_step)/self.dist_disc*self.dist_disc
+        # self.car_vel = (self.car_vel + command*self.time_step)/self.vel_disc*self.vel_disc
+
         collision = 0
         if self.obst_type == "rock" and self.car_dist <= CAR_POS_THRESH_AEBS:
             collision = 1
@@ -145,6 +149,64 @@ class World:
             return self.car_dist, self.car_vel, collision, terminal, command
         else:
             return self.car_dist, self.car_vel, collision, terminal
+
+
+    def step_predVel(self, obj_class, obj_dist, obj_vel, return_command = False):
+        self.cur_step += 1
+
+        pred_obj_vel = self.car_vel - obj_vel
+
+        # print([self.car_dist,self.car_vel,obj_class])
+
+
+        ## Compute control command
+        if obj_class == "rock":
+            command = self.AEBS_controller(obj_dist, pred_obj_vel)
+        elif obj_class == "car":
+            command = self.car_following_controller(obj_dist, pred_obj_vel)
+        elif obj_class == "nothing":
+            command = self.car_vel_controller(obj_dist, pred_obj_vel)
+        else:
+            raise Exception("Unrecognized obstacle type: " + str(obj_class))
+
+
+        ## Apply control commands to car model
+        # continuous vars
+        # self.car_dist = self.car_dist - (self.car_vel-self.obst_vel)*self.time_step
+        # self.car_vel = self.car_vel + command*self.time_step
+
+        # discrete vars
+        # self.car_dist = round((self.car_dist - (self.car_vel-self.obst_vel)*self.time_step)/self.dist_disc)*self.dist_disc
+        # self.car_vel = round((self.car_vel + command*self.time_step)/self.vel_disc)*self.vel_disc
+
+        # no rounding
+        self.car_dist = (self.car_dist - (self.car_vel-self.obst_vel)*self.time_step)/self.dist_disc*self.dist_disc
+        self.car_vel = (self.car_vel + command*self.time_step)/self.vel_disc*self.vel_disc
+
+        collision = 0
+        if self.obst_type == "rock" and self.car_dist <= CAR_POS_THRESH_AEBS:
+            collision = 1
+        
+        if self.obst_type == "nothing" and self.car_vel <= CAR_VEL_LOWER_BOUND:
+            collision = 1
+        
+        if self.obst_type == "car" and (self.car_vel <= CAR_VEL_LOWER_BOUND or self.car_dist <= CAR_POS_FOLLOWING_LOWER_BOUND):
+            collision = 1
+            # print("Collision: dist " + str(self.car_dist) + ", vel " + str(self.car_vel))
+
+
+        terminal = 0
+        if collision or self.car_vel <= 0:
+            terminal = 1
+
+        self.allDist.append(self.car_dist)
+        self.allVel.append(self.car_vel)
+        
+        if return_command:
+            return self.car_dist, self.car_vel, collision, terminal, command
+        else:
+            return self.car_dist, self.car_vel, collision, terminal
+
 
     def AEBS_controller(self,obj_dist, obj_vel):
 
@@ -186,3 +248,5 @@ class World:
         if self.car_vel < self.goal_car_vel:
             command = ACCEL_RATE
         return command
+
+

@@ -4,6 +4,7 @@ import numpy as np
 import random
 import copy
 import matplotlib.pyplot as plt
+from statistics import mode, mean, _counts
 
 PARTICLE_INIT_DIST = 30
 PARTICLE_INIT_SPEED = 10
@@ -90,14 +91,25 @@ class particleFilter:
 
             curr_particle = self.allParticles[len(self.allParticles)-1][i]
 
+            # rounding
+            # if self.max_dist is not None:
+            #     curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else round((min(self.max_dist,curr_particle[0] - (curr_particle[1])*self.time_step) + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc)*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+            # else:
+            #     curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else round((curr_particle[0] - (curr_particle[1])*self.time_step + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc)*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+            # if self.max_vel is not None:
+            #     curr_particle[1] = max(-self.max_vel,round(min(self.max_vel,(curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0]))/self.vel_disc)*self.vel_disc)
+            # else:
+            #     curr_particle[1] = round((curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])/self.vel_disc)*self.vel_disc
+
+            # no rounding
             if self.max_dist is not None:
-                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else round((min(self.max_dist,curr_particle[0] - (curr_particle[1])*self.time_step) + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc)*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (min(self.max_dist,curr_particle[0] - (curr_particle[1])*self.time_step) + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
             else:
-                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else round((curr_particle[0] - (curr_particle[1])*self.time_step + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc)*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (curr_particle[0] - (curr_particle[1])*self.time_step + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
             if self.max_vel is not None:
-                curr_particle[1] = max(0,round(min(self.max_vel,(curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0]))/self.vel_disc)*self.vel_disc)
+                curr_particle[1] = max(-self.max_vel,min(self.max_vel,(curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0]))/self.vel_disc*self.vel_disc)
             else:
-                curr_particle[1] = max(0,round((curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])/self.vel_disc)*self.vel_disc)
+                curr_particle[1] = (curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])/self.vel_disc*self.vel_disc
 
             self.allParticles[len(self.allParticles)-1][i] = curr_particle
 
@@ -134,3 +146,25 @@ class particleFilter:
             plt.clf()
 
 
+    def get_filter_state(self):
+        all_obst_class = [particle[2] for particle in self.allParticles[len(self.allParticles)-1]]
+        pred_obst = max([p[0] for p in _counts(all_obst_class)])
+        # pred_obst = mode(all_obst_class)
+
+        all_dist = []
+        all_vel = []
+        for i in range(self.num_particles):
+
+            curr_particle = self.allParticles[len(self.allParticles)-1][i]
+            if curr_particle[2] != pred_obst:
+                continue
+            all_dist.append(curr_particle[0])
+            all_vel.append(curr_particle[1])
+
+        pred_dist = mean(all_dist)
+        pred_vel = mean(all_vel)
+
+        if pred_obst==0:
+            assert pred_dist == NOTHING_DIST
+
+        return pred_dist,pred_vel,pred_obst
