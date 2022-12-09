@@ -15,9 +15,15 @@ fprintf(fid, '\n \n');
 % LECProbs = [0.0017 0.0267 0.0450 0.1083 0.1800 0.2017 0.1983 0.1217 0.0683 0.0267 0.0183 0.0033];
 
 % deltawl=5
-LECProbs = [0.1817 0.77 0.0483];
-
-
+if deltawl==5
+    % deltawl=5
+    LECProbs = [0.1817 0.77 0.0483];
+elseif deltawl==2
+    % deltawl=2
+    LECProbs = [(0.0017+0.0267) (0.0450+0.1083) (0.1800+0.2017) (0.1983+0.1217) (0.0683+0.0267) (0.0183+0.0033)];
+else
+    error('LEC model not hardcoded for deltawl=%i',deltawl)
+end
 for j=1:numTanks-1
     for k=1:wlidMax
         currcell=lattice(k);
