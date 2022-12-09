@@ -1,6 +1,6 @@
 function[] = printLECModelWaterTankMultiTank(lattice, maxN, fid,deltawl,numTanks)
 
-numBins = 3;
+
 latticeSize=size(lattice);
 wlidMax=latticeSize(2);
 
@@ -24,6 +24,12 @@ elseif deltawl==2
 else
     error('LEC model not hardcoded for deltawl=%i',deltawl)
 end
+
+% sum(LECProbs)
+assert(abs(sum(LECProbs)-1)<= 0.0001,'LEC error probabilities do not sum to 1');
+
+numBins = length(LECProbs);
+
 for j=1:numTanks-1
     for k=1:wlidMax
         currcell=lattice(k);
