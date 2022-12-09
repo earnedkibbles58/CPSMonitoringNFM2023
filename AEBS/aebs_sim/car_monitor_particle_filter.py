@@ -13,13 +13,15 @@ PARTICLE_SPEED_NOISE = 5
 
 NOTHING_DIST = -100
 
-PARTICLE_DYN_DIST_NOISE = 1
-PARTICLE_DYN_VEL_NOISE = 1
+PARTICLE_DYN_DIST_NOISE = 2 # FIXME: was 1
+PARTICLE_DYN_VEL_NOISE = 2 #FIXME: was 1
 PARTICLE_DYN_OBST_VEL_NOISE = 1
 
-class particleFilter:
+PARTICLE_DYN_OBST_CLASS_FLIP = 0.1 ## FIXME: was 0.1
 
-    def __init__(self, car_speed, classifier_accs, time_step, dist_disc, vel_disc, num_particles = 1000, max_dist=None,max_vel=None) -> None:
+
+class particleFilter:
+    def __init__(self, car_speed, classifier_accs, time_step, dist_disc, vel_disc, num_particles = 100, max_dist=None,max_vel=None) -> None:
 
         self.num_particles = num_particles
         self.classifier_accs = classifier_accs
@@ -35,10 +37,10 @@ class particleFilter:
         self.max_vel = max_vel
 
         for i in range(self.num_particles):
-            init_obst = random.choice([0,1,2])
+            init_obst = random.choice([0,1])
 
             init_dist = NOTHING_DIST if init_obst == 0 else PARTICLE_INIT_DIST + PARTICLE_DIST_NOISE * (2*np.random.random() - 1)
-            init_speed_obst = 0 if init_obst != 2 else PARTICLE_INIT_SPEED
+            init_speed_obst = 0 if init_obst == 0 else PARTICLE_INIT_SPEED
             init_speed = car_speed - init_speed_obst + PARTICLE_SPEED_NOISE * (2*np.random.random() - 1)
             
             
@@ -51,6 +53,7 @@ class particleFilter:
     def resample_particles(self, weights):
 
         new_indices = np.random.choice(self.num_particles, self.num_particles, p=weights)
+        # print("New indices: " + str(new_indices))
 
         particle_list = []
         for i in range(len(new_indices)):
@@ -64,15 +67,22 @@ class particleFilter:
 
     def compute_weights(self,est_obst,est_dist,est_vel,car_vel):
         weights = np.zeros(self.num_particles)
+
         for i in range(self.num_particles):
 
             curr_particle = self.allParticles[len(self.allParticles)-1][i]
             if est_obst == 0 or curr_particle[2] == 0:
-                weight = self.classifier_accs[curr_particle[2]][est_obst]*(np.random.random()/2)
+                weight = math.exp(-abs(curr_particle[1]-car_vel)/2)*self.classifier_accs[curr_particle[2]][est_obst]/1000#*(np.random.random()/4)
             else:
-                # weight = math.exp(-abs(curr_particle[0]-est_dist)/2 - abs(curr_particle[1]-(car_vel-est_vel))/2)*self.classifier_accs[curr_particle[2]][est_obst] # with vel error in weight
-                weight = math.exp(-abs(curr_particle[0]-est_dist)/2)*self.classifier_accs[curr_particle[2]][est_obst] # without vel error in weight
+                weight = math.exp(-abs(curr_particle[0]-est_dist)/2 - abs(curr_particle[1]-(car_vel-est_vel)))*self.classifier_accs[curr_particle[2]][est_obst] # with vel error in weight
+                # weight = math.exp(-abs(curr_particle[0]-est_dist)/2)*self.classifier_accs[curr_particle[2]][est_obst] # without vel error in weight
             weights[i] = weight
+
+            # if len(self.allParticles) > 20:
+            #     print("Measured state: " + str([est_dist,car_vel-est_vel]))
+            #     print("Curr particle: " + str(curr_particle))
+            #     print("Weight: " + str(weight))
+            #     input("Press enter to continue")
 
         # normalize weights
         if np.sum(weights) > 0:
@@ -87,6 +97,8 @@ class particleFilter:
 
 
     def step_dynamics(self, control_command):
+        flip_vals = np.random.uniform(0,1,size = self.num_particles)
+
         for i in range(self.num_particles):
 
             curr_particle = self.allParticles[len(self.allParticles)-1][i]
@@ -101,15 +113,28 @@ class particleFilter:
             # else:
             #     curr_particle[1] = round((curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])/self.vel_disc)*self.vel_disc
 
+            if flip_vals[i] < PARTICLE_DYN_OBST_CLASS_FLIP:
+                # print("Flipping labels")
+                if curr_particle[2] == 0:
+                    curr_particle[2] = 1
+                    curr_particle[0] =  PARTICLE_INIT_DIST + PARTICLE_DIST_NOISE * (2*np.random.random() - 1)
+                    curr_particle[1] = curr_particle[1] - PARTICLE_INIT_SPEED + PARTICLE_SPEED_NOISE * (2*np.random.random() - 1)
+
+                else:
+                    curr_particle[2] = 0
+                    curr_particle[0] = NOTHING_DIST
+                    curr_particle[1] = curr_particle[1] + PARTICLE_INIT_SPEED + PARTICLE_SPEED_NOISE * (2*np.random.random() - 1)
+                continue
+
             # no rounding
             if self.max_dist is not None:
-                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (min(self.max_dist,curr_particle[0] - (curr_particle[1])*self.time_step) + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (min(self.max_dist,curr_particle[0] - (curr_particle[1])*self.time_step) + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
             else:
-                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (curr_particle[0] - (curr_particle[1])*self.time_step + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])/self.dist_disc*self.dist_disc# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
+                curr_particle[0] = NOTHING_DIST if curr_particle[2] == 0 else (curr_particle[0] - (curr_particle[1])*self.time_step + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0])# + np.random.normal(0,PARTICLE_DYN_DIST_NOISE,1)[0]
             if self.max_vel is not None:
-                curr_particle[1] = max(-self.max_vel,min(self.max_vel,(curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0]))/self.vel_disc*self.vel_disc)
+                curr_particle[1] = max(-self.max_vel,min(self.max_vel,(curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])))
             else:
-                curr_particle[1] = (curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])/self.vel_disc*self.vel_disc
+                curr_particle[1] = (curr_particle[1] + control_command*self.time_step + np.random.normal(0,PARTICLE_DYN_VEL_NOISE,1)[0])
 
             self.allParticles[len(self.allParticles)-1][i] = curr_particle
 
@@ -124,8 +149,7 @@ class particleFilter:
 
     
 
-    def plot_filter_states(self,folder_to_save):
-
+    def plot_filter_states(self,folder_to_save,carDists=None,carVels=None):
 
         for time_step in range(len(self.allParticles)):
 
@@ -135,10 +159,15 @@ class particleFilter:
 
             ## Plot 2-d dots of distances and speeds
             plt.plot(particle_dists,particle_vels,'b.')
+            if carDists is not None:
+                plt.plot(carDists[time_step],carVels[time_step],'r*')
             plt.xlabel("Distance from car to obstacle")
             plt.ylabel("Speed of car")
+            plt.xlim([15,25])
+            plt.ylim([-12,20])
             plt.savefig(folder_to_save + "/carStates/carStatesPF" + str(time_step) + ".png")
             plt.clf()
+
 
             ## plot histogram of obst classes
             plt.hist(particle_obst_classes,bins=3)
