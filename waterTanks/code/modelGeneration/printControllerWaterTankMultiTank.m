@@ -47,8 +47,7 @@ end
 
 fprintf(fid,'    [] currN=1&sink=0&tankFlag=%i&contAction1!=contAction2 -> (currN''=2)&(tankFlag''=1)&(contAction1G''=contAction1)&(contAction2G''=contAction2);\n',(numTanks+1));
 fprintf(fid,'    [] currN=1&sink=0&tankFlag=%i&contAction1=0&contAction2=0 -> (currN''=2)&(tankFlag''=1)&(contAction1G''=contAction1)&(contAction2G''=contAction2);\n',(numTanks+1));
-fprintf(fid,'    [] currN=1&sink=0&tankFlag=%i&contAction1=1&contAction2=1&wlidPer1<=wlidPer2 -> (currN''=2)&(tankFlag''=1)&(contAction1G''=contAction1)&(contAction2G''=0);\n',(numTanks+1));
-fprintf(fid,'    [] currN=1&sink=0&tankFlag=%i&contAction1=1&contAction2=1&wlidPer2<wlidPer1 -> (currN''=2)&(tankFlag''=1)&(contAction2G''=contAction2)&(contAction1G''=0);\n',(numTanks+1));
+fprintf(fid,'    [] currN=1&sink=0&tankFlag=%i&contAction1=1&contAction2=1 -> 0.5:(currN''=2)&(tankFlag''=1)&(contAction1G''=contAction1)&(contAction2G''=0)+0.5:(currN''=2)&(tankFlag''=1)&(contAction1G''=0)&(contAction2G''=contAction2);\n',(numTanks+1));
 
 fprintf(fid,'\n\n');
 
