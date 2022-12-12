@@ -21,6 +21,8 @@ if deltawl==5
 elseif deltawl==2
     % deltawl=2
     LECProbs = [(0.0017+0.0267) (0.0450+0.1083) (0.1800+0.2017) (0.1983+0.1217) (0.0683+0.0267) (0.0183+0.0033)];
+elseif deltawl==1
+    LECProbs = [0.0017 0.0267 0.0450 0.1083 0.1800 0.2017 0.1983 0.1217 0.0683 0.0267 0.0183 0.0033];
 else
     error('LEC model not hardcoded for deltawl=%i',deltawl)
 end
