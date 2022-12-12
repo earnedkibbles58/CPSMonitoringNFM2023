@@ -163,7 +163,7 @@ for j=1:numTrials
             end
         end
         
-        
+
         
         %% Update water levels
         %     contAction
