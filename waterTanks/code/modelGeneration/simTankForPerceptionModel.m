@@ -1,4 +1,5 @@
 seed = 23443;
+% seed = 8968;
 rng(seed);
 
 numTrials = 100;
@@ -22,6 +23,9 @@ for j=1:numTrials
     wlInitHigh = 60;
     wlInit1=unifrnd(wlInitLow,wlInitHigh);
     wlInit2=unifrnd(wlInitLow,wlInitHigh);
+    
+%     wlInit1=50;
+%     wlInit2=50;
     
     ctrlThreshLower = 20;
     ctrlThreshUpper = 80;
@@ -141,13 +145,13 @@ for j=1:numTrials
         %% Global controller
         contActionG1=contAction1;
         contActionG2=contAction2;
-        if(contAction1==1 && contAction2==1 && wlPer1<=wlPer2)
+        if(contAction1==1 && contAction2==1 && wlPer1<wlPer2)
             contActionG1=1;
             contActionG2=0;
         elseif(contAction1==1 && contAction2==1 && wlPer1>wlPer2)
             contActionG1=0;
             contActionG2=1;
-        elseif(contAction1==1 && contAction2==1)
+        elseif(contAction1==1 && contAction2==1 && wlPer1==wlPer2)
             r = rand;
             if r<=0.5
                 contActionG1=1;
