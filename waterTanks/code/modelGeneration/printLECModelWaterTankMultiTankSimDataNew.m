@@ -87,9 +87,9 @@ for j=1:numTanks-1
         this_val = per_err_dict_interval(this_key);
         
         if k ==length(map_keys)
-            fprintf(fid, ' %i:wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(tankFlag''=%i);\n' , this_val, j,j,this_key,j+1);
+            fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i)))&(tankFlag''=%i);\n' , this_val, j,j,this_key,j+1);
         else
-            fprintf(fid, ' %i:wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(tankFlag''=%i) +' , this_val, j,j,this_key,j+1);
+            fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i)))&(tankFlag''=%i) +' , this_val, j,j,this_key,j+1);
         end
     end
     
@@ -105,9 +105,9 @@ for k=1:length(map_keys)
     this_val = per_err_dict_interval(this_key);
 
     if k ==length(map_keys)
-        fprintf(fid, ' %i:wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(currN''=1)&(tankFlag''=1);\n' , this_val, j,j,this_key);
+        fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i)))&(currN''=1)&(tankFlag''=1);\n' , this_val, j,j,this_key);
     else
-        fprintf(fid, ' %i:wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(currN''=1)&(tankFlag''=1) +' , this_val, j,j,this_key);
+        fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i)))&(currN''=1)&(tankFlag''=1) +' , this_val, j,j,this_key);
     end
 end
     
