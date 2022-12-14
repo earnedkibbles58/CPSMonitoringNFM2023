@@ -65,7 +65,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist1 = [stateDist1 1];
         else
             stateDist1 = [stateDist1 0];
@@ -81,7 +81,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist2 = [stateDist2 1];
         else
             stateDist2 = [stateDist2 0];
