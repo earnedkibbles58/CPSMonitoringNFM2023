@@ -1,7 +1,7 @@
 seed = 7967;
 rng(seed);
 
-numTrials = 1;
+numTrials = 1000;
 
 unsafes = 0;
 
@@ -18,15 +18,18 @@ for j=1:numTrials
 %     outflows_est = [4.3];
     
     wlMax=100;
-    wlInitLow = 40;
-    wlInitHigh = 60;
+    wlInitLow = 9;
+    wlInitHigh = 11;
     wlInit1=unifrnd(wlInitLow,wlInitHigh);
     wlInit2=unifrnd(wlInitLow,wlInitHigh);
+    
+%     wlInit1 = 10;
+%     wlInit2 = 10;
     
     ctrlThreshLower = 20;
     ctrlThreshUpper = 80;
     
-    numSteps = 300;%50;
+    numSteps = 10;%50;
     contAction1 = 0;
     contAction2 = 0;
     
@@ -61,7 +64,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist1 = [stateDist1 1];
         else
             stateDist1 = [stateDist1 0];
@@ -77,7 +80,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist2 = [stateDist2 1];
         else
             stateDist2 = [stateDist2 0];
@@ -141,7 +144,7 @@ for j=1:numTrials
         %% Global controller
         contActionG1=contAction1;
         contActionG2=contAction2;
-        if(contAction1==1 && contAction2==1 && wlPer1<=wlPer2)
+        if(contAction1==1 && contAction2==1 && wlPer1<wlPer2)
             contActionG1=1;
             contActionG2=0;
         elseif(contAction1==1 && contAction2==1 && wlPer1>wlPer2)

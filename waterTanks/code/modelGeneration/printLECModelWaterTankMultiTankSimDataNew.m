@@ -1,4 +1,4 @@
-function[] = printLECModelWaterTankMultiTank(lattice, maxN, fid,deltawl,numTanks)
+function[] = printLECModelWaterTankMultiTankNew(lattice, maxN, fid,deltawl,numTanks)
 
 
 latticeSize=size(lattice);
@@ -50,59 +50,64 @@ LECProbs = [0.000402333534500 0.000201166767250 0.000603500301750 0.001307583987
     0.000704083685375 0.001005833836250 0.000402333534500 0.000301750150875 0.000201166767250];
 err_amnts = -11:1:11;
 
+%% compute error probs for diff bins:
+% create dict mapping error amount to probability
+per_err_dict_interval = containers.Map(0,0);
 
-
-
+for per_err_bin=1:length(LECProbs)
+    err_amnt = err_amnts(per_err_bin);
+    % map true err to interval err
+    if err_amnt == 0
+        bin_ind = 0;
+    elseif err_amnt > 0
+        bin_ind = ceil(err_amnt/deltawl);
+    else
+        bin_ind = floor(err_amnt/deltawl);
+    end
+        
+    if isKey(per_err_dict_interval,bin_ind)
+        per_err_dict_interval(bin_ind) = per_err_dict_interval(bin_ind) + LECProbs(per_err_bin);
+    else
+        per_err_dict_interval(bin_ind) = LECProbs(per_err_bin);
+    end
+end
 
 % sum(LECProbs)
 assert(abs(sum(LECProbs)-1)<= 0.0001,'LEC error probabilities do not sum to 1');
 
 numBins = length(LECProbs);
 
-for j=1:numTanks-1
-    for k=1:wlidMax
-        currcell=lattice(k);
-        wlid=currcell.wlid;
-        wl = currcell.wl;
 
-        fprintf(fid, '    [] currN=0&sink=0&tankFlag=%i&wlid%i=%i -> ',j,j,wlid);
-%         fprintf(fid, "%i:(wlidPer%i'=0)&(tankFlag'=%i) + %i:(wlidPer%i'=wlidMax)&(tankFlag'=%i) + ",LECLowerProb,j,j+1,LECUpperProb,j,j+1);
-        for i=1:numBins
-            nextwl = wl+i*deltawl-deltawl*(numBins+1)/2;
-            nextwlid = ceil(nextwl/deltawl);
-            nextwlid = max(0,nextwlid);
-            nextwlid = min(wlidMax-1,nextwlid);
-            if i==numBins
-                fprintf(fid, ' %i:(wlidPer%i''=%i)&(tankFlag''=%i);\n' , LECProbs(i), j, nextwlid,j+1);
-            else
-                fprintf(fid, ' %i:(wlidPer%i''=%i)&(tankFlag''=%i) +' , LECProbs(i), j, nextwlid,j+1);
-            end
+for j=1:numTanks-1
+    
+    fprintf(fid, '    [] currN=0&sink=0&tankFlag=%i -> ',j);
+    map_keys = keys(per_err_dict_interval);
+    for k=1:length(map_keys)
+        this_key = map_keys{k};
+        this_val = per_err_dict_interval(this_key);
+        
+        if k ==length(map_keys)
+            fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(tankFlag''=%i);\n' , this_val, j,j,this_key,j+1);
+        else
+            fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(tankFlag''=%i) +' , this_val, j,j,this_key,j+1);
         end
     end
+    
 end
-
 
 j=numTanks;
 
-for k=1:wlidMax
-    currcell=lattice(k);
-    wlid=currcell.wlid;
-    wl = currcell.wl;
 
-    fprintf(fid, '    [] currN=0&sink=0&tankFlag=%i&wlid%i=%i -> ',j,j,wlid);
-%     fprintf(fid, "%i:(wlidPer%i'=0)&(currN'=1)&(tankFlag'=1) + %i:(wlidPer%i'=wlidMax)&(currN'=1)&(tankFlag'=1) + ",LECLowerProb,j,LECUpperProb,j);
-    for i=1:numBins
-        nextwl = wl+i*deltawl-deltawl*(numBins+1)/2;
-        nextwlid = ceil(nextwl/deltawl);
-        nextwlid = max(0,nextwlid);
-        nextwlid = min(wlidMax-1,nextwlid);
-        
-        
-        if i==numBins
-            fprintf(fid, ' %i:(wlidPer%i''=%i)&(currN''=1)&(tankFlag''=1);\n' , LECProbs(i), j, nextwlid);
-        else
-            fprintf(fid, ' %i:(wlidPer%i''=%i)&(currN''=1)&(tankFlag''=1) +' , LECProbs(i), j, nextwlid);
-        end
+fprintf(fid, '    [] currN=0&sink=0&tankFlag=%i -> ',j);
+map_keys = keys(per_err_dict_interval);
+for k=1:length(map_keys)
+    this_key = map_keys{k};
+    this_val = per_err_dict_interval(this_key);
+
+    if k ==length(map_keys)
+        fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(currN''=1)&(tankFlag''=1);\n' , this_val, j,j,this_key);
+    else
+        fprintf(fid, ' %i:(wlidPer%i''=max(0,min(wlidMax,wlid%i+%i))&(currN''=1)&(tankFlag''=1) +' , this_val, j,j,this_key);
     end
 end
     

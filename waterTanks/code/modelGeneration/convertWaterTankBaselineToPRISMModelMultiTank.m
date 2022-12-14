@@ -37,7 +37,7 @@ fprintf(fid, '    tankFlag : [1..%i] init 1;\n', numTanks+1);
 fprintf(fid, '    sink: [0..1] init 0;\n');
 fprintf(fid, '    timesteps: [0..maxTime] init 0;\n');
 
-printLECModelWaterTankMultiTankSimData(lattice, maxN, fid,deltawl,numTanks)
+printLECModelWaterTankMultiTankSimDataNew(lattice, maxN, fid,deltawl,numTanks)
 
 printControllerWaterTankMultiTank(lattice, maxN, fid,deltawl,numTanks)
 
