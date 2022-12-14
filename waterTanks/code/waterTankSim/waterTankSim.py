@@ -28,7 +28,8 @@ def get_bin(conf,num_bins):
 
 def main():
 
-    random.seed(1323)
+    # random.seed(1323)
+    random.seed(6753)
 
     numTrials = 100
     unsafes = 0
@@ -44,9 +45,9 @@ def main():
 
     allTrialLengths = []
 
-    plotMonitorCalibration = True
+    plotMonitorCalibration = False
     plotEachTrial = False
-    plotAUCCurve = True
+    plotAUCCurve = False
 
     ## safety model params
     delta_wl = 2
@@ -76,15 +77,15 @@ def main():
         
         
         wlMax=100
-        wlInitLow = 9
-        wlInitHigh = 11
+        wlInitLow = 40
+        wlInitHigh = 60
         wlInit1=random.uniform(wlInitLow,wlInitHigh)
         wlInit2=random.uniform(wlInitLow,wlInitHigh)
                 
         ctrlThreshLower = 20
         ctrlThreshUpper = 80
         
-        numSteps = 50
+        numSteps = 100
         numStepsPRISM = 10
         contAction1 = 0
         contAction2 = 0
@@ -96,8 +97,8 @@ def main():
         # noiseDist = makedist('Normal','mu',mu,'sigma',sigma)
         np.random.normal(mu,sigma,1)[0] ## SEEME: command to generate samples from noise distribution
         # noiseDist = scipy.stats.norm(mu,sigma)
-        minValProb = 0.1
-        maxValProb = 0.1
+        minValProb = 0.2
+        maxValProb = 0.2
 
 
         estimated_safety_probs = []
@@ -194,7 +195,7 @@ def main():
             
             
             ## compute control tank 2
-            if wlEst2<ctrlThreshLower or (wlEst1<ctrlThreshUpper and contAction2==1):
+            if wlEst2<ctrlThreshLower or (wlEst2<ctrlThreshUpper and contAction2==1):
                 contAction2=1
             else:
                 contAction2=0
@@ -346,26 +347,29 @@ def main():
         binned_counts_true[bin][0]+=safeUnsafe
         binned_counts_true[bin][1]+=1
 
-    if plotMonitorCalibration:
-        print("Calibration across all classes conf monitor using state estimates")
-        for bin in binned_counts:
-            bin_lower = bin/num_bins
-            bin_upper = (bin+1)/num_bins
-            if binned_counts[bin][1] != 0:
-                # print(binned_counts[bin])
-                print("[" + str(bin_lower) + "," + str(bin_upper) + "]: " + str(1-float(binned_counts[bin][0]/binned_counts[bin][1])) + ", " + str(binned_counts[bin][1]-binned_counts[bin][0]) + "/" + str(binned_counts[bin][1]))
-            else:
-                print("[" + str(bin_lower) + "," + str(bin_upper) + "]: No data in this bin")
 
-        print("Calibration across all classes conf monitor using state estimates")
-        for bin in binned_counts_true:
-            bin_lower = bin/num_bins
-            bin_upper = (bin+1)/num_bins
-            if binned_counts_true[bin][1] != 0:
-                # print(binned_counts[bin])
-                print("[" + str(bin_lower) + "," + str(bin_upper) + "]: " + str(1-float(binned_counts_true[bin][0]/binned_counts_true[bin][1])) + ", " + str(binned_counts_true[bin][1]-binned_counts_true[bin][0]) + "/" + str(binned_counts_true[bin][1]))
-            else:
-                print("[" + str(bin_lower) + "," + str(bin_upper) + "]: No data in this bin")
+    print("Calibration across all classes conf monitor using state estimates")
+    for bin in binned_counts:
+        bin_lower = bin/num_bins
+        bin_upper = (bin+1)/num_bins
+        if binned_counts[bin][1] != 0:
+            # print(binned_counts[bin])
+            print("[" + str(bin_lower) + "," + str(bin_upper) + "]: " + str(1-float(binned_counts[bin][0]/binned_counts[bin][1])) + ", " + str(binned_counts[bin][1]-binned_counts[bin][0]) + "/" + str(binned_counts[bin][1]))
+        else:
+            print("[" + str(bin_lower) + "," + str(bin_upper) + "]: No data in this bin")
+
+    print("Calibration across all classes conf monitor using actual state")
+    for bin in binned_counts_true:
+        bin_lower = bin/num_bins
+        bin_upper = (bin+1)/num_bins
+        if binned_counts_true[bin][1] != 0:
+            # print(binned_counts[bin])
+            print("[" + str(bin_lower) + "," + str(bin_upper) + "]: " + str(1-float(binned_counts_true[bin][0]/binned_counts_true[bin][1])) + ", " + str(binned_counts_true[bin][1]-binned_counts_true[bin][0]) + "/" + str(binned_counts_true[bin][1]))
+        else:
+            print("[" + str(bin_lower) + "," + str(bin_upper) + "]: No data in this bin")
+
+
+    if plotMonitorCalibration:
 
 
         print("Plotting safety vals")

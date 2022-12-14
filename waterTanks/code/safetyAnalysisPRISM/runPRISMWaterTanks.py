@@ -15,8 +15,8 @@ for contAction1 in range(0,2):
         for wl1 in range(1,wlidMax+1):
             for wl2 in range(1,wl1+1):
 
-                if contAction1 == 0 and contAction2 == 0:
-                    continue
+                # if contAction1 == 0 and contAction2 == 0:
+                #     continue
 
                 print("Running " + str([wl1,wl2,contAction1,contAction2]) + " out of " + str([wlidMax]), flush=True)
 
