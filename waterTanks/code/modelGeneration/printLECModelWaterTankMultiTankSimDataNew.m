@@ -55,6 +55,18 @@ fprintf(fid, '\n \n');
 % updated
 LECProbs = [0.0005 0.0011 0.0018 0.0058 0.0164 0.0316 0.0626 0.1126 0.1673 0.1895 0.1717 0.1193 0.0665 0.0287 0.0115 0.0061 0.0029 0.0019 0.0014 0.0006];
 err_amnts = -10:1:9;
+
+% sum(LECProbs)
+% 1-sum(LECProbs)
+
+if abs(sum(LECProbs)-1) <= 0.01
+    LECProbs = LECProbs/sum(LECProbs);
+end
+
+% sum(LECProbs)
+assert(abs(sum(LECProbs)-1)<= 0.0001,'LEC error probabilities do not sum to 1');
+
+
 %% compute error probs for diff bins:
 % create dict mapping error amount to probability
 per_err_dict_interval = containers.Map(0,0);
@@ -77,14 +89,6 @@ for per_err_bin=1:length(LECProbs)
     end
 end
 
-% sum(LECProbs)
-% 1-sum(LECProbs)
-
-if abs(sum(LECProbs)-1) <= 0.01
-    LECProbs = LECProbs/sum(LECProbs);
-end
-
-assert(abs(sum(LECProbs)-1)<= 0.0001,'LEC error probabilities do not sum to 1');
 
 for j=1:numTanks-1
     
