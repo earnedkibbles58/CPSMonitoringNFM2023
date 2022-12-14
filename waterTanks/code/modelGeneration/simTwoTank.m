@@ -18,8 +18,8 @@ for j=1:numTrials
 %     outflows_est = [4.3];
     
     wlMax=100;
-    wlInitLow = 9;
-    wlInitHigh = 11;
+    wlInitLow = 40;
+    wlInitHigh = 60;
     wlInit1=unifrnd(wlInitLow,wlInitHigh);
     wlInit2=unifrnd(wlInitLow,wlInitHigh);
     
@@ -29,7 +29,7 @@ for j=1:numTrials
     ctrlThreshLower = 20;
     ctrlThreshUpper = 80;
     
-    numSteps = 10;%50;
+    numSteps = 50;%50;
     contAction1 = 0;
     contAction2 = 0;
     
@@ -38,8 +38,8 @@ for j=1:numTrials
     mu = 0;
     sigma = 5;
     noiseDist = makedist('Normal','mu',mu,'sigma',sigma);
-    minValProb = 0.1;
-    maxValProb = 0.1;
+    minValProb = 0.2;
+    maxValProb = 0.2;
 
     
     wl1 = wlInit1;
@@ -133,7 +133,7 @@ for j=1:numTrials
         end
         
         % compute control tank 2
-        if wlEst2<ctrlThreshLower || (wlEst1<ctrlThreshUpper && contAction2==1)
+        if wlEst2<ctrlThreshLower || (wlEst2<ctrlThreshUpper && contAction2==1)
             contAction2=1;
         else
             contAction2=0;

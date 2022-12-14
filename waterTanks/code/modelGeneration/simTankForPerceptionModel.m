@@ -39,8 +39,8 @@ for j=1:numTrials
     mu = 0;
     sigma = 5;
     noiseDist = makedist('Normal','mu',mu,'sigma',sigma);
-    minValProb = 0.1;
-    maxValProb = 0.1;
+    minValProb = 0.2;
+    maxValProb = 0.2;
 
     
     wl1 = wlInit1;
@@ -134,7 +134,7 @@ for j=1:numTrials
         end
         
         % compute control tank 2
-        if wlEst2<ctrlThreshLower || (wlEst1<ctrlThreshUpper && contAction2==1)
+        if wlEst2<ctrlThreshLower || (wlEst2<ctrlThreshUpper && contAction2==1)
             contAction2=1;
         else
             contAction2=0;
