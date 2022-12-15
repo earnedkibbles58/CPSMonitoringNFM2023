@@ -32,17 +32,9 @@ module PRISMLattice
     [] currN=0&sink=0&tankFlag=2 ->  2.560512e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-2)))&(currN'=1)&(tankFlag'=1) + 5.637127e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+-1)))&(currN'=1)&(tankFlag'=1) + 1.717343e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+0)))&(currN'=1)&(tankFlag'=1) + 2.321464e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+1)))&(currN'=1)&(tankFlag'=1) + 6.801360e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+2)))&(currN'=1)&(tankFlag'=1);
 
  
-    [] currN=1&wlidPer1<=4&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=1)&(tankFlag'=2);
-    [] currN=1&contAction1=0&wlidPer1>4&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=0)&(tankFlag'=2);
-    [] currN=1&contAction1!=0&wlidPer1<16&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=1)&(tankFlag'=2);
-    [] currN=1&wlidPer1>=16&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=0)&(tankFlag'=2);
+    [] currN=1&wlidPer1<=2&sink=0&tankFlag=1 -> (currN'=1)&(contAction2'=1)&(tankFlag'=    [] currN=1&contAction1=0&wlidPer1>2&sink=0&tankFlag=1 -> (currN'=1)&(contAction2'=0)&(tankFlag'=    [] currN=1&contAction1!=0&wlidPer1<=17&sink=0&tankFlag=1 -> (currN'=1)&(contAction2'=1)&(tankFlag'=    [] currN=1&wlidPer1>=17&sink=0&tankFlag=1 -> (currN'=1)&(contAction2'=0)&(tankFlag'=
 
-
-    [] currN=1&wlidPer2<=4&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=1)&(tankFlag'=3);
-    [] currN=1&contAction2=0&wlidPer2>4&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=0)&(tankFlag'=3);
-    [] currN=1&contAction2!=0&wlidPer2<16&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=1)&(tankFlag'=3);
-    [] currN=1&wlidPer2>=16&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=0)&(tankFlag'=3);
-
+    [] currN=1&wlidPer2<=2&sink=0&tankFlag=2 -> (currN'=1)&(contAction3'=1)&(tankFlag'=    [] currN=1&contAction2=0&wlidPer2>2&sink=0&tankFlag=2 -> (currN'=1)&(contAction3'=0)&(tankFlag'=    [] currN=1&contAction2!=0&wlidPer2<=17&sink=0&tankFlag=2 -> (currN'=1)&(contAction3'=1)&(tankFlag'=    [] currN=1&wlidPer2>=17&sink=0&tankFlag=2 -> (currN'=1)&(contAction3'=0)&(tankFlag'=
 
     [] currN=1&sink=0&tankFlag=3&contAction1!=contAction2 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=contAction2);
     [] currN=1&sink=0&tankFlag=3&contAction1=0&contAction2=0 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=contAction2);
