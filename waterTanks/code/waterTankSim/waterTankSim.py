@@ -48,6 +48,7 @@ def main():
     plotMonitorCalibration = False
     plotEachTrial = False
     plotAUCCurve = False
+    plotTrials = True
 
     ## safety model params
     delta_wl = 2
@@ -72,20 +73,20 @@ def main():
         inflows = [13.5]
         outflows = [4.3]
         
-        inflows_est = [12, 13, 14, 15]
-        outflows_est = [3, 4, 5, 6]
+        inflows_est = [11, 12, 13, 14, 15]
+        outflows_est = [3, 4, 5, 6, 7]
         
         
         wlMax=100
-        wlInitLow = 40
-        wlInitHigh = 60
+        wlInitLow = 10
+        wlInitHigh = 15
         wlInit1=random.uniform(wlInitLow,wlInitHigh)
         wlInit2=random.uniform(wlInitLow,wlInitHigh)
                 
         ctrlThreshLower = 20
         ctrlThreshUpper = 80
         
-        numSteps = 100
+        numSteps = 50
         numStepsPRISM = 10
         contAction1 = 0
         contAction2 = 0
@@ -123,6 +124,7 @@ def main():
         filter_wl_disc = 1
         stateDist1 = []
         curr_wl = filter_wl_disc/2
+
         while True:
             if curr_wl>wlMax:
                 break
@@ -154,6 +156,14 @@ def main():
         for i in range(len(stateDist2)):
             stateDist2[i] = stateDist2[i]/sum(stateDist2)
 
+        # wlEst1 = wlEstFromStateDist(stateDist1,filter_wl_disc)
+        # wlEsts1.append(wlEst1)
+
+        # wlEst2 = wlEstFromStateDist(stateDist2,filter_wl_disc)
+        # wlEsts2.append(wlEst2)
+
+        wls1.append(wl1)
+        wls2.append(wl2)
 
         for i in range(numSteps):
             r=random.uniform(0,1)
@@ -170,7 +180,7 @@ def main():
             
             stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,mu,sigma,filter_wl_disc,minValProb,maxValProb,wlMax)
             wlEst1 = wlEstFromStateDist(stateDist1,filter_wl_disc)
-            
+            wlEsts1.append(wlEst1)
             
             r=random.uniform(0,1)
             if(r<minValProb):
@@ -186,6 +196,7 @@ def main():
             
             stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,mu,sigma,filter_wl_disc,minValProb,maxValProb,wlMax)
             wlEst2 = wlEstFromStateDist(stateDist2,filter_wl_disc)
+            wlEsts2.append(wlEst2)
 
             ## compute control tank 1
             if wlEst1<ctrlThreshLower or (wlEst1<ctrlThreshUpper and contAction1==1):
@@ -206,13 +217,13 @@ def main():
             ## Global controller
             contActionG1=contAction1
             contActionG2=contAction2
-            if(contAction1==1 and contAction2==1 and wlPer1<wlPer2):
+            if(contAction1==1 and contAction2==1 and wlEst1<wlEst2):
                 contActionG1=1
                 contActionG2=0
-            elif(contAction1==1 and contAction2==1 and wlPer1>wlPer2):
+            elif(contAction1==1 and contAction2==1 and wlEst1>wlEst2):
                 contActionG1=0
                 contActionG2=1
-            elif(contAction1==1 and contAction2==1 and wlPer1 == wlPer2):
+            elif(contAction1==1 and contAction2==1 and wlEst1 == wlEst2):
                 r = random.uniform(0,1)
                 if r<=0.5:
                     contActionG1=1
@@ -234,13 +245,13 @@ def main():
             ## update filter
             stateDist1 = bayesMonitorDynamics(stateDist1,contActionG1,inflows_est,outflows_est,filter_wl_disc,wlMax)
             wlEst1 = wlEstFromStateDist(stateDist1,filter_wl_disc)
-            wlEsts1.append(wlEst1)
+            # wlEsts1.append(wlEst1)
             wlEstErrs1.append(wlEst1-wl1)
             allPerErrs.append(wlEst1-wl1)
 
             stateDist2 = bayesMonitorDynamics(stateDist2,contActionG2,inflows_est,outflows_est,filter_wl_disc,wlMax)
             wlEst2 = wlEstFromStateDist(stateDist2,filter_wl_disc)
-            wlEsts2.append(wlEstFromStateDist)
+            # wlEsts2.append(wlEst2)
             wlEstErrs2.append(wlEst2-wl2)
             allPerErrs.append(wlEst2-wl2)
 
@@ -263,10 +274,12 @@ def main():
             if(wl1<=0 or wl1>wlMax):
                 unsafe=1
                 safe_unsafe_over_time.append(1)
+                print("Unsafe")
                 break
             elif(wl2<=0 or wl2>wlMax):
                 unsafe=1
                 safe_unsafe_over_time.append(1)
+                print("Unsafe")
                 break
             else:
                 safe_unsafe_over_time.append(0)
@@ -276,16 +289,25 @@ def main():
         
         allTrialLengths.append(len(estimated_safety_probs))
 
+        print("Trial len: " + str(allTrialLengths[-1]))
+
         unsafes=unsafes+unsafe
         
-        for time,safeProb in enumerate(estimated_safety_probs[0:numSteps-numStepsPRISM]):
+        for time,safeProb in enumerate(estimated_safety_probs[0:numSteps]):
             allSafeProbs.append(safeProb)
             allTrueSafeProbs.append(true_safety_probs[time])
 
+            
             if sum(safe_unsafe_over_time[time:time+numStepsPRISM]) >= 1:
                 crash_this_time = 1
             else:
                 crash_this_time = 0
+            if unsafe==1:
+                print("Time: " + str(time))
+                print("Crash: " + str(crash_this_time))
+                print("Safe prob est: " + str(safeProb))
+                print("Safe prob true: " + str(true_safety_probs[time]))
+                input("Press enter to conintue")
             allSafeUnsafe.append(crash_this_time)
             if time in safe_probs_per_time:
                 safe_probs_per_time[time].append(safeProb)
@@ -295,6 +317,19 @@ def main():
                 safe_probs_per_time[time] = [safeProb]
                 safe_unsafe_per_time[time] = [crash_this_time]
                 true_safe_probs_per_time[time] = [true_safety_probs[time]]
+        
+        if plotTrials:
+
+            plt.clf()
+            plt.plot(wls1,'r')
+            plt.plot(wls2,'b')
+            plt.plot(wlEsts1,'m')
+            plt.plot(wlEsts2,'g')
+            plt.ylim(0, wlMax)
+            plt.savefig("tempTrialPlot.png")
+            input("Press enter to conintue")
+            plt.clf()
+
 
     
     print("Num unsafes: " + str(unsafes))

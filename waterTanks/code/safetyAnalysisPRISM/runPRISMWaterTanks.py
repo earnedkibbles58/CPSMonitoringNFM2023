@@ -44,7 +44,7 @@ for contAction1 in range(0,2):
                 counter +=1
 
                 if counter % numProc == numProc-1:
-                    print("Sleeping for 10 seconds")
+                    print("Sleeping for 8 seconds")
                     time.sleep(8)
                     print("Done sleeping")
 
