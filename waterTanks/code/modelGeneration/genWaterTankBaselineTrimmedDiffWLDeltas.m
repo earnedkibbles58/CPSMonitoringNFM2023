@@ -22,8 +22,8 @@ for i=1:length(deltawls)
     %% Untrimmed model
     baseline = initWaterTankBaseline(wlMax,deltawl);
     lattice = addWaterTankBaselineTransitions(baseline,N,deltawl,inflow,outflow,trimmed);
-    modelFolder = '../../models/withTrimming/if' + string(inflow) + '_of' + string(outflow) + '_deltawl' + string(deltawl);
+    modelFolder = '../../models/withTrimming/upperLimit90/if' + string(inflow) + '_of' + string(outflow) + '_deltawl' + string(deltawl);
     mkdir(modelFolder)
-    modelFile = '../../models/withTrimming/if' + string(inflow) + '_of' + string(outflow) + '_deltawl' + string(deltawl) + '/waterTankBaseline.prism';
+    modelFile = '../../models/withTrimming/upperLimit90/if' + string(inflow) + '_of' + string(outflow) + '_deltawl' + string(deltawl) + '/waterTankBaseline.prism';
     convertWaterTankBaselineToPRISMModelMultiTank(lattice,N,modelFile,deltawl,trimmed,2);
 end

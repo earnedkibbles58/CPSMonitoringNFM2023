@@ -1,0 +1,672 @@
+mdp
+
+ 
+const int wlidInit1;
+const int initContAction1;
+const int wlidInit2;
+const int initContAction2;
+const int wlidMax=101;
+const int Nmax=1;
+const int maxTime=10;
+
+ 
+module PRISMLattice
+
+    wlid1 : [0..wlidMax] init wlidInit1;
+    wlidPer1 : [0..wlidMax] init wlidInit1;
+    contAction1 : [0..1] init initContAction1;
+    contAction1G : [0..1] init initContAction1;
+
+    wlid2 : [0..wlidMax] init wlidInit2;
+    wlidPer2 : [0..wlidMax] init wlidInit2;
+    contAction2 : [0..1] init initContAction2;
+    contAction2G : [0..1] init initContAction2;
+
+    currN : [0..2] init 0;
+    tankFlag : [1..3] init 1;
+    sink: [0..1] init 0;
+    timesteps: [0..maxTime] init 0;
+
+ 
+    [] currN=0&sink=0&tankFlag=1 ->  6.001200e-04:(wlidPer1'=max(0,min(wlidMax,wlid1+-12)))&(tankFlag'=2) + 1.800360e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+-11)))&(tankFlag'=2) + 2.700540e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+-10)))&(tankFlag'=2) + 2.300460e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+-9)))&(tankFlag'=2) + 6.801360e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+-8)))&(tankFlag'=2) + 1.320264e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+-7)))&(tankFlag'=2) + 2.680536e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+-6)))&(tankFlag'=2) + 4.000800e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+-5)))&(tankFlag'=2) + 6.511302e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+-4)))&(tankFlag'=2) + 8.291658e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+-3)))&(tankFlag'=2) + 1.172234e-01:(wlidPer1'=max(0,min(wlidMax,wlid1+-2)))&(tankFlag'=2) + 1.367273e-01:(wlidPer1'=max(0,min(wlidMax,wlid1+-1)))&(tankFlag'=2) + 1.281256e-01:(wlidPer1'=max(0,min(wlidMax,wlid1+0)))&(tankFlag'=2) + 1.183237e-01:(wlidPer1'=max(0,min(wlidMax,wlid1+1)))&(tankFlag'=2) + 9.761952e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+2)))&(tankFlag'=2) + 6.941388e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+3)))&(tankFlag'=2) + 3.760752e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+4)))&(tankFlag'=2) + 2.700540e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+5)))&(tankFlag'=2) + 1.380276e-02:(wlidPer1'=max(0,min(wlidMax,wlid1+6)))&(tankFlag'=2) + 6.901380e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+7)))&(tankFlag'=2) + 2.400480e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+8)))&(tankFlag'=2) + 1.400280e-03:(wlidPer1'=max(0,min(wlidMax,wlid1+9)))&(tankFlag'=2) + 5.001000e-04:(wlidPer1'=max(0,min(wlidMax,wlid1+10)))&(tankFlag'=2) + 5.001000e-04:(wlidPer1'=max(0,min(wlidMax,wlid1+11)))&(tankFlag'=2) + 2.000400e-04:(wlidPer1'=max(0,min(wlidMax,wlid1+12)))&(tankFlag'=2);
+    [] currN=0&sink=0&tankFlag=2 ->  6.001200e-04:(wlidPer2'=max(0,min(wlidMax,wlid2+-12)))&(currN'=1)&(tankFlag'=1) + 1.800360e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+-11)))&(currN'=1)&(tankFlag'=1) + 2.700540e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+-10)))&(currN'=1)&(tankFlag'=1) + 2.300460e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+-9)))&(currN'=1)&(tankFlag'=1) + 6.801360e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+-8)))&(currN'=1)&(tankFlag'=1) + 1.320264e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-7)))&(currN'=1)&(tankFlag'=1) + 2.680536e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-6)))&(currN'=1)&(tankFlag'=1) + 4.000800e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-5)))&(currN'=1)&(tankFlag'=1) + 6.511302e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-4)))&(currN'=1)&(tankFlag'=1) + 8.291658e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+-3)))&(currN'=1)&(tankFlag'=1) + 1.172234e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+-2)))&(currN'=1)&(tankFlag'=1) + 1.367273e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+-1)))&(currN'=1)&(tankFlag'=1) + 1.281256e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+0)))&(currN'=1)&(tankFlag'=1) + 1.183237e-01:(wlidPer2'=max(0,min(wlidMax,wlid2+1)))&(currN'=1)&(tankFlag'=1) + 9.761952e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+2)))&(currN'=1)&(tankFlag'=1) + 6.941388e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+3)))&(currN'=1)&(tankFlag'=1) + 3.760752e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+4)))&(currN'=1)&(tankFlag'=1) + 2.700540e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+5)))&(currN'=1)&(tankFlag'=1) + 1.380276e-02:(wlidPer2'=max(0,min(wlidMax,wlid2+6)))&(currN'=1)&(tankFlag'=1) + 6.901380e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+7)))&(currN'=1)&(tankFlag'=1) + 2.400480e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+8)))&(currN'=1)&(tankFlag'=1) + 1.400280e-03:(wlidPer2'=max(0,min(wlidMax,wlid2+9)))&(currN'=1)&(tankFlag'=1) + 5.001000e-04:(wlidPer2'=max(0,min(wlidMax,wlid2+10)))&(currN'=1)&(tankFlag'=1) + 5.001000e-04:(wlidPer2'=max(0,min(wlidMax,wlid2+11)))&(currN'=1)&(tankFlag'=1) + 2.000400e-04:(wlidPer2'=max(0,min(wlidMax,wlid2+12)))&(currN'=1)&(tankFlag'=1);
+
+ 
+    [] currN=1&wlidPer1<=10&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=1)&(tankFlag'=2);
+    [] currN=1&contAction1=0&wlidPer1>10&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=0)&(tankFlag'=2);
+    [] currN=1&contAction1!=0&wlidPer1<90&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=1)&(tankFlag'=2);
+    [] currN=1&wlidPer1>=90&sink=0&tankFlag=1 -> (currN'=1)&(contAction1'=0)&(tankFlag'=2);
+
+
+    [] currN=1&wlidPer2<=10&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=1)&(tankFlag'=3);
+    [] currN=1&contAction2=0&wlidPer2>10&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=0)&(tankFlag'=3);
+    [] currN=1&contAction2!=0&wlidPer2<90&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=1)&(tankFlag'=3);
+    [] currN=1&wlidPer2>=90&sink=0&tankFlag=2 -> (currN'=1)&(contAction2'=0)&(tankFlag'=3);
+
+
+    [] currN=1&sink=0&tankFlag=3&contAction1!=contAction2 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=contAction2);
+    [] currN=1&sink=0&tankFlag=3&contAction1=0&contAction2=0 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=contAction2);
+    [] currN=1&sink=0&tankFlag=3&contAction1=1&contAction2=1&wlidPer1<wlidPer2 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=0);
+    [] currN=1&sink=0&tankFlag=3&contAction1=1&contAction2=1&wlidPer1>wlidPer2 -> (currN'=2)&(tankFlag'=1)&(contAction1G'=0)&(contAction2G'=contAction2);
+    [] currN=1&sink=0&tankFlag=3&contAction1=1&contAction2=1&wlidPer1=wlidPer2 -> 0.5:(currN'=2)&(tankFlag'=1)&(contAction1G'=contAction1)&(contAction2G'=0)+0.5:(currN'=2)&(tankFlag'=1)&(contAction1G'=0)&(contAction2G'=contAction2);
+
+
+
+    [] wlid1=0&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=0&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=1&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=1&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=10)&(tankFlag'=2);
+
+    [] wlid1=2&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=2&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=11)&(tankFlag'=2);
+
+    [] wlid1=3&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=3&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=12)&(tankFlag'=2);
+
+    [] wlid1=4&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=4&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=13)&(tankFlag'=2);
+
+    [] wlid1=5&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=5&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=14)&(tankFlag'=2);
+
+    [] wlid1=6&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=1)&(tankFlag'=2);
+    [] wlid1=6&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=15)&(tankFlag'=2);
+
+    [] wlid1=7&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=2)&(tankFlag'=2);
+    [] wlid1=7&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=16)&(tankFlag'=2);
+
+    [] wlid1=8&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=3)&(tankFlag'=2);
+    [] wlid1=8&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=17)&(tankFlag'=2);
+
+    [] wlid1=9&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=4)&(tankFlag'=2);
+    [] wlid1=9&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=18)&(tankFlag'=2);
+
+    [] wlid1=10&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=5)&(tankFlag'=2);
+    [] wlid1=10&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=19)&(tankFlag'=2);
+
+    [] wlid1=11&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=6)&(tankFlag'=2);
+    [] wlid1=11&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=20)&(tankFlag'=2);
+
+    [] wlid1=12&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=7)&(tankFlag'=2);
+    [] wlid1=12&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=21)&(tankFlag'=2);
+
+    [] wlid1=13&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=8)&(tankFlag'=2);
+    [] wlid1=13&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=22)&(tankFlag'=2);
+
+    [] wlid1=14&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=9)&(tankFlag'=2);
+    [] wlid1=14&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=23)&(tankFlag'=2);
+
+    [] wlid1=15&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=10)&(tankFlag'=2);
+    [] wlid1=15&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=24)&(tankFlag'=2);
+
+    [] wlid1=16&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=11)&(tankFlag'=2);
+    [] wlid1=16&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=25)&(tankFlag'=2);
+
+    [] wlid1=17&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=12)&(tankFlag'=2);
+    [] wlid1=17&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=26)&(tankFlag'=2);
+
+    [] wlid1=18&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=13)&(tankFlag'=2);
+    [] wlid1=18&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=27)&(tankFlag'=2);
+
+    [] wlid1=19&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=14)&(tankFlag'=2);
+    [] wlid1=19&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=28)&(tankFlag'=2);
+
+    [] wlid1=20&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=15)&(tankFlag'=2);
+    [] wlid1=20&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=29)&(tankFlag'=2);
+
+    [] wlid1=21&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=16)&(tankFlag'=2);
+    [] wlid1=21&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=30)&(tankFlag'=2);
+
+    [] wlid1=22&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=17)&(tankFlag'=2);
+    [] wlid1=22&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=31)&(tankFlag'=2);
+
+    [] wlid1=23&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=18)&(tankFlag'=2);
+    [] wlid1=23&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=32)&(tankFlag'=2);
+
+    [] wlid1=24&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=19)&(tankFlag'=2);
+    [] wlid1=24&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=33)&(tankFlag'=2);
+
+    [] wlid1=25&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=20)&(tankFlag'=2);
+    [] wlid1=25&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=34)&(tankFlag'=2);
+
+    [] wlid1=26&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=21)&(tankFlag'=2);
+    [] wlid1=26&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=35)&(tankFlag'=2);
+
+    [] wlid1=27&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=22)&(tankFlag'=2);
+    [] wlid1=27&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=36)&(tankFlag'=2);
+
+    [] wlid1=28&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=23)&(tankFlag'=2);
+    [] wlid1=28&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=37)&(tankFlag'=2);
+
+    [] wlid1=29&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=24)&(tankFlag'=2);
+    [] wlid1=29&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=38)&(tankFlag'=2);
+
+    [] wlid1=30&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=25)&(tankFlag'=2);
+    [] wlid1=30&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=39)&(tankFlag'=2);
+
+    [] wlid1=31&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=26)&(tankFlag'=2);
+    [] wlid1=31&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=40)&(tankFlag'=2);
+
+    [] wlid1=32&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=27)&(tankFlag'=2);
+    [] wlid1=32&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=41)&(tankFlag'=2);
+
+    [] wlid1=33&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=28)&(tankFlag'=2);
+    [] wlid1=33&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=42)&(tankFlag'=2);
+
+    [] wlid1=34&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=29)&(tankFlag'=2);
+    [] wlid1=34&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=43)&(tankFlag'=2);
+
+    [] wlid1=35&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=30)&(tankFlag'=2);
+    [] wlid1=35&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=44)&(tankFlag'=2);
+
+    [] wlid1=36&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=31)&(tankFlag'=2);
+    [] wlid1=36&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=45)&(tankFlag'=2);
+
+    [] wlid1=37&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=32)&(tankFlag'=2);
+    [] wlid1=37&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=46)&(tankFlag'=2);
+
+    [] wlid1=38&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=33)&(tankFlag'=2);
+    [] wlid1=38&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=47)&(tankFlag'=2);
+
+    [] wlid1=39&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=34)&(tankFlag'=2);
+    [] wlid1=39&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=48)&(tankFlag'=2);
+
+    [] wlid1=40&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=35)&(tankFlag'=2);
+    [] wlid1=40&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=49)&(tankFlag'=2);
+
+    [] wlid1=41&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=36)&(tankFlag'=2);
+    [] wlid1=41&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=50)&(tankFlag'=2);
+    [] wlid1=41&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=51)&(tankFlag'=2);
+
+    [] wlid1=42&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=37)&(tankFlag'=2);
+    [] wlid1=42&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=52)&(tankFlag'=2);
+
+    [] wlid1=43&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=38)&(tankFlag'=2);
+    [] wlid1=43&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=53)&(tankFlag'=2);
+
+    [] wlid1=44&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=39)&(tankFlag'=2);
+    [] wlid1=44&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=54)&(tankFlag'=2);
+
+    [] wlid1=45&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=40)&(tankFlag'=2);
+    [] wlid1=45&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=55)&(tankFlag'=2);
+
+    [] wlid1=46&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=41)&(tankFlag'=2);
+    [] wlid1=46&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=56)&(tankFlag'=2);
+
+    [] wlid1=47&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=42)&(tankFlag'=2);
+    [] wlid1=47&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=57)&(tankFlag'=2);
+
+    [] wlid1=48&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=43)&(tankFlag'=2);
+    [] wlid1=48&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=58)&(tankFlag'=2);
+
+    [] wlid1=49&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=44)&(tankFlag'=2);
+    [] wlid1=49&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=59)&(tankFlag'=2);
+
+    [] wlid1=50&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=45)&(tankFlag'=2);
+    [] wlid1=50&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=60)&(tankFlag'=2);
+
+    [] wlid1=51&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=46)&(tankFlag'=2);
+    [] wlid1=51&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=61)&(tankFlag'=2);
+
+    [] wlid1=52&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=47)&(tankFlag'=2);
+    [] wlid1=52&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=62)&(tankFlag'=2);
+
+    [] wlid1=53&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=48)&(tankFlag'=2);
+    [] wlid1=53&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=63)&(tankFlag'=2);
+
+    [] wlid1=54&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=49)&(tankFlag'=2);
+    [] wlid1=54&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=64)&(tankFlag'=2);
+
+    [] wlid1=55&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=50)&(tankFlag'=2);
+    [] wlid1=55&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=51)&(tankFlag'=2);
+    [] wlid1=55&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=65)&(tankFlag'=2);
+
+    [] wlid1=56&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=52)&(tankFlag'=2);
+    [] wlid1=56&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=66)&(tankFlag'=2);
+
+    [] wlid1=57&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=53)&(tankFlag'=2);
+    [] wlid1=57&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=67)&(tankFlag'=2);
+
+    [] wlid1=58&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=54)&(tankFlag'=2);
+    [] wlid1=58&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=68)&(tankFlag'=2);
+
+    [] wlid1=59&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=55)&(tankFlag'=2);
+    [] wlid1=59&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=69)&(tankFlag'=2);
+
+    [] wlid1=60&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=56)&(tankFlag'=2);
+    [] wlid1=60&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=70)&(tankFlag'=2);
+
+    [] wlid1=61&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=57)&(tankFlag'=2);
+    [] wlid1=61&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=71)&(tankFlag'=2);
+
+    [] wlid1=62&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=58)&(tankFlag'=2);
+    [] wlid1=62&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=72)&(tankFlag'=2);
+
+    [] wlid1=63&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=59)&(tankFlag'=2);
+    [] wlid1=63&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=73)&(tankFlag'=2);
+
+    [] wlid1=64&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=60)&(tankFlag'=2);
+    [] wlid1=64&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=74)&(tankFlag'=2);
+
+    [] wlid1=65&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=61)&(tankFlag'=2);
+    [] wlid1=65&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=75)&(tankFlag'=2);
+
+    [] wlid1=66&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=62)&(tankFlag'=2);
+    [] wlid1=66&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=76)&(tankFlag'=2);
+
+    [] wlid1=67&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=63)&(tankFlag'=2);
+    [] wlid1=67&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=77)&(tankFlag'=2);
+
+    [] wlid1=68&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=64)&(tankFlag'=2);
+    [] wlid1=68&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=78)&(tankFlag'=2);
+
+    [] wlid1=69&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=65)&(tankFlag'=2);
+    [] wlid1=69&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=79)&(tankFlag'=2);
+
+    [] wlid1=70&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=66)&(tankFlag'=2);
+    [] wlid1=70&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=80)&(tankFlag'=2);
+
+    [] wlid1=71&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=67)&(tankFlag'=2);
+    [] wlid1=71&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=81)&(tankFlag'=2);
+
+    [] wlid1=72&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=68)&(tankFlag'=2);
+    [] wlid1=72&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=82)&(tankFlag'=2);
+
+    [] wlid1=73&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=69)&(tankFlag'=2);
+    [] wlid1=73&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=83)&(tankFlag'=2);
+
+    [] wlid1=74&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=70)&(tankFlag'=2);
+    [] wlid1=74&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=84)&(tankFlag'=2);
+
+    [] wlid1=75&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=71)&(tankFlag'=2);
+    [] wlid1=75&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=85)&(tankFlag'=2);
+
+    [] wlid1=76&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=72)&(tankFlag'=2);
+    [] wlid1=76&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=86)&(tankFlag'=2);
+
+    [] wlid1=77&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=73)&(tankFlag'=2);
+    [] wlid1=77&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=87)&(tankFlag'=2);
+
+    [] wlid1=78&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=74)&(tankFlag'=2);
+    [] wlid1=78&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=88)&(tankFlag'=2);
+
+    [] wlid1=79&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=75)&(tankFlag'=2);
+    [] wlid1=79&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=89)&(tankFlag'=2);
+
+    [] wlid1=80&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=76)&(tankFlag'=2);
+    [] wlid1=80&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=90)&(tankFlag'=2);
+
+    [] wlid1=81&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=77)&(tankFlag'=2);
+    [] wlid1=81&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=91)&(tankFlag'=2);
+
+    [] wlid1=82&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=78)&(tankFlag'=2);
+    [] wlid1=82&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=92)&(tankFlag'=2);
+
+    [] wlid1=83&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=79)&(tankFlag'=2);
+    [] wlid1=83&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=93)&(tankFlag'=2);
+
+    [] wlid1=84&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=80)&(tankFlag'=2);
+    [] wlid1=84&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=94)&(tankFlag'=2);
+
+    [] wlid1=85&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=81)&(tankFlag'=2);
+    [] wlid1=85&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=95)&(tankFlag'=2);
+
+    [] wlid1=86&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=82)&(tankFlag'=2);
+    [] wlid1=86&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=96)&(tankFlag'=2);
+
+    [] wlid1=87&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=83)&(tankFlag'=2);
+    [] wlid1=87&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=97)&(tankFlag'=2);
+
+    [] wlid1=88&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=84)&(tankFlag'=2);
+    [] wlid1=88&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=98)&(tankFlag'=2);
+
+    [] wlid1=89&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=85)&(tankFlag'=2);
+    [] wlid1=89&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=99)&(tankFlag'=2);
+
+    [] wlid1=90&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=86)&(tankFlag'=2);
+    [] wlid1=90&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=100)&(tankFlag'=2);
+
+    [] wlid1=91&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=87)&(tankFlag'=2);
+    [] wlid1=91&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=92&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=88)&(tankFlag'=2);
+    [] wlid1=92&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=93&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=89)&(tankFlag'=2);
+    [] wlid1=93&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=94&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=90)&(tankFlag'=2);
+    [] wlid1=94&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=95&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=91)&(tankFlag'=2);
+    [] wlid1=95&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=96&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=92)&(tankFlag'=2);
+    [] wlid1=96&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=97&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=93)&(tankFlag'=2);
+    [] wlid1=97&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=98&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=94)&(tankFlag'=2);
+    [] wlid1=98&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=99&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=95)&(tankFlag'=2);
+    [] wlid1=99&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=100&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (wlid1'=96)&(tankFlag'=2);
+    [] wlid1=100&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid1=101&currN=2&contAction1G=0&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+    [] wlid1=101&currN=2&contAction1G=1&sink=0&timesteps<maxTime&tankFlag=1 -> (sink'=1);
+
+    [] wlid2=0&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=0&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=1&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=1&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=10)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=2&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=2&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=11)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=3&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=3&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=12)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=4&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=4&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=13)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=5&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=5&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=14)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=6&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=1)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=6&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=15)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=7&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=2)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=7&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=16)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=8&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=3)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=8&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=17)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=9&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=4)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=9&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=18)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=10&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=5)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=10&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=19)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=11&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=6)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=11&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=20)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=12&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=7)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=12&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=21)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=13&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=8)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=13&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=22)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=14&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=9)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=14&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=23)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=15&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=10)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=15&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=24)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=16&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=11)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=16&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=25)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=17&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=12)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=17&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=26)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=18&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=13)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=18&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=27)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=19&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=14)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=19&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=28)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=20&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=15)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=20&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=29)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=21&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=16)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=21&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=30)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=22&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=17)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=22&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=31)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=23&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=18)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=23&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=32)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=24&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=19)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=24&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=33)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=25&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=20)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=25&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=34)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=26&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=21)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=26&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=35)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=27&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=22)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=27&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=36)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=28&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=23)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=28&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=37)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=29&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=24)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=29&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=38)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=30&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=25)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=30&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=39)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=31&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=26)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=31&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=40)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=32&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=27)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=32&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=41)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=33&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=28)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=33&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=42)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=34&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=29)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=34&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=43)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=35&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=30)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=35&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=44)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=36&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=31)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=36&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=45)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=37&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=32)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=37&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=46)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=38&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=33)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=38&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=47)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=39&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=34)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=39&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=48)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=40&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=35)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=40&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=49)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=41&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=36)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=41&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=50)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=41&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=51)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=42&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=37)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=42&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=52)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=43&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=38)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=43&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=53)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=44&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=39)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=44&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=54)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=45&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=40)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=45&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=55)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=46&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=41)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=46&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=56)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=47&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=42)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=47&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=57)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=48&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=43)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=48&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=58)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=49&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=44)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=49&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=59)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=50&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=45)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=50&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=60)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=51&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=46)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=51&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=61)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=52&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=47)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=52&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=62)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=53&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=48)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=53&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=63)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=54&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=49)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=54&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=64)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=55&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=50)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=55&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=51)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=55&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=65)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=56&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=52)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=56&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=66)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=57&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=53)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=57&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=67)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=58&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=54)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=58&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=68)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=59&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=55)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=59&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=69)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=60&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=56)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=60&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=70)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=61&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=57)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=61&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=71)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=62&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=58)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=62&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=72)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=63&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=59)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=63&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=73)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=64&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=60)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=64&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=74)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=65&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=61)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=65&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=75)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=66&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=62)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=66&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=76)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=67&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=63)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=67&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=77)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=68&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=64)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=68&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=78)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=69&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=65)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=69&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=79)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=70&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=66)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=70&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=80)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=71&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=67)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=71&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=81)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=72&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=68)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=72&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=82)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=73&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=69)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=73&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=83)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=74&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=70)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=74&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=84)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=75&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=71)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=75&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=85)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=76&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=72)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=76&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=86)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=77&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=73)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=77&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=87)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=78&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=74)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=78&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=88)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=79&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=75)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=79&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=89)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=80&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=76)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=80&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=90)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=81&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=77)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=81&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=91)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=82&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=78)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=82&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=92)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=83&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=79)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=83&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=93)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=84&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=80)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=84&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=94)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=85&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=81)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=85&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=95)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=86&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=82)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=86&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=96)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=87&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=83)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=87&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=97)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=88&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=84)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=88&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=98)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=89&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=85)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=89&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=99)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=90&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=86)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=90&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=100)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+
+    [] wlid2=91&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=87)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=91&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=92&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=88)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=92&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=93&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=89)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=93&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=94&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=90)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=94&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=95&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=91)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=95&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=96&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=92)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=96&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=97&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=93)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=97&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=98&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=94)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=98&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=99&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=95)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=99&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=100&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (wlid2'=96)&(currN'=0)&(timesteps'=timesteps+1)&(tankFlag'=1);
+    [] wlid2=100&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+    [] wlid2=101&currN=2&contAction2G=0&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+    [] wlid2=101&currN=2&contAction2G=1&sink=0&timesteps<maxTime&tankFlag=2 -> (sink'=1);
+
+ 
+endmodule

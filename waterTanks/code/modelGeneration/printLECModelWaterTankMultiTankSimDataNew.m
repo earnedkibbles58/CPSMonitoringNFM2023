@@ -57,10 +57,12 @@ fprintf(fid, '\n \n');
 % err_amnts = -10:1:9;
 
 % updated again (filter doesn't know exact perception noise model)
-LECProbs = [0.0011 0.0028 0.0039 0.0066 0.0159 0.0269 0.0436 0.0666 0.0854 0.1167 0.1310 0.1306 0.1138 0.1020 0.0618 0.0436 0.0242 0.0128 0.0052 0.0035 0.001 0.0007 0.0001 0.0001];
-err_amnts = -11:1:12;
+% LECProbs = [0.0011 0.0028 0.0039 0.0066 0.0159 0.0269 0.0436 0.0666 0.0854 0.1167 0.1310 0.1306 0.1138 0.1020 0.0618 0.0436 0.0242 0.0128 0.0052 0.0035 0.001 0.0007 0.0001 0.0001];
+% err_amnts = -11:1:12;
 
-
+% updated again (filter doesn't know exact perception noise model and upper control limit is 90 and random inital controller states)
+LECProbs = [0.0006 0.0018 0.0027 0.0023 0.0068 0.0132 0.0268 0.0400 0.0651 0.0829 0.1172 0.1367 0.1281 0.1183 0.0976 0.0694 0.0376 0.0270 0.0138 0.0069 0.0024 0.0014 0.0005 0.0005 0.0002];
+err_amnts = -12:1:12;
 
 % sum(LECProbs)
 % 1-sum(LECProbs)
