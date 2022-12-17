@@ -1,7 +1,7 @@
 function[] = printControllerWaterTankMultiTank(lattice, maxN, fid,deltawl,numTanks)
 
 wlContLowThresh=10;
-wlContUpThresh=85;
+wlContUpThresh=90;
 
 wlContLowThreshid = ceil(wlContLowThresh/deltawl);
 wlContUpThreshid = ceil(wlContUpThresh/deltawl);

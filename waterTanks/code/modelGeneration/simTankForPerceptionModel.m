@@ -28,11 +28,11 @@ for j=1:numTrials
 %     wlInit2=50;
     
     ctrlThreshLower = 10;
-    ctrlThreshUpper = 85;
+    ctrlThreshUpper = 90;
     
     numSteps = 50;
-    contAction1 = 0;
-    contAction2 = 0;
+    contAction1 = randi(2)-1;
+    contAction2 = randi(2)-1;
     
     unsafe = 0;
     % noise params
