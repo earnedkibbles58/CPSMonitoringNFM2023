@@ -13,7 +13,7 @@ from parsePRISMOutput import computeViolationFromWaterLevels
 from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
 from sklearn.metrics import brier_score_loss
-
+import pandas as pd
 
 def get_bin(conf,num_bins):
 
@@ -24,14 +24,32 @@ def get_bin(conf,num_bins):
             return j
     return num_bins-1
 
+def get_bin_adaptive(conf,intervals):
 
+    for j in range(1,len(intervals)):
+
+        bin_upper = intervals[j]
+        if conf <= bin_upper:
+            return (intervals[j-1],intervals[j])
+    
+    print("Error finding bin for conf=" + str(conf) + " and intervals: " + str(intervals))
+    return -1
 
 def main():
 
     # random.seed(1323)
-    random.seed(6753)
+    # random.seed(6753)
+    
+    # seed = 23 # 100 trials upper limit 90, all trials upper limit 85
+    seed = 935 # 1000 trials upper limit 90
 
-    numTrials = 100
+
+    random.seed(seed)
+    np.random.seed(seed)
+
+
+
+    numTrials = 1000
     unsafes = 0
     allPerErrs = []
 
@@ -45,24 +63,24 @@ def main():
 
     allTrialLengths = []
 
-    plotMonitorCalibration = False
+    plotMonitorCalibration = True
     plotEachTrial = False
-    plotAUCCurve = False
-    plotTrials = True
+    plotAUCCurve = True
+    plotTrials = False
 
     ## safety model params
-    delta_wl = 2
+    delta_wl = 1
     trimming = True
     if trimming:
-        safe_prob_base_dir = "../../models/safetyProbs/withTrimming/if13.5_of4.3_deltawl" + str(delta_wl) + "/"
+        safe_prob_base_dir = "../../models/safetyProbs/withTrimming/upperLimit90/if13.5_of4.3_deltawl" + str(delta_wl) + "/"
     else:
-        safe_prob_base_dir = "../../models/safetyProbs/noTrimming/if13.5_of4.3_deltawl" + str(delta_wl) + "/"
+        safe_prob_base_dir = "../../models/safetyProbs/noTrimming/upperLimit90/if13.5_of4.3_deltawl" + str(delta_wl) + "/"
 
 
     if trimming:
-        plotSaveDir = "../../results/monitorPlots/withTrimming/deltawl_" + str(delta_wl) + "/"
+        plotSaveDir = "../../results/monitorPlots/withTrimming/upperLimit90/deltawl_" + str(delta_wl) + "_" + str(numTrials) + "Trials_randomInitControlState/"
     else:
-        plotSaveDir = "../../results/monitorPlots/noTrimming/deltawl_" + str(delta_wl) + "/"
+        plotSaveDir = "../../results/monitorPlots/noTrimming/upperLimit90/deltawl_" + str(delta_wl) + "_" + str(numTrials) + "Trials_randomInitControlState/"
 
     trialSaveDir = plotSaveDir + "trials/"
     os.makedirs(trialSaveDir,exist_ok=True)
@@ -73,33 +91,39 @@ def main():
         inflows = [13.5]
         outflows = [4.3]
         
-        inflows_est = [11, 12, 13, 14, 15]
-        outflows_est = [3, 4, 5, 6, 7]
+        inflows_est = [12, 13, 14, 15]
+        outflows_est = [3, 4, 5, 6]
         
         
         wlMax=100
-        wlInitLow = 10
-        wlInitHigh = 15
+        wlInitLow = 40
+        wlInitHigh = 60
         wlInit1=random.uniform(wlInitLow,wlInitHigh)
         wlInit2=random.uniform(wlInitLow,wlInitHigh)
                 
-        ctrlThreshLower = 20
-        ctrlThreshUpper = 80
+        ctrlThreshLower = 10
+        ctrlThreshUpper = 90
         
         numSteps = 50
         numStepsPRISM = 10
-        contAction1 = 0
-        contAction2 = 0
+        contAction1 = random.randint(0,1)#0
+        contAction2 = random.randint(0,1)#0
         
         unsafe = 0
 
         mu = 0
         sigma = 5
+
+        mu_filter = 0
+        sigma_filter = 2
         # noiseDist = makedist('Normal','mu',mu,'sigma',sigma)
-        np.random.normal(mu,sigma,1)[0] ## SEEME: command to generate samples from noise distribution
+        # np.random.normal(mu,sigma,1)[0] ## SEEME: command to generate samples from noise distribution
         # noiseDist = scipy.stats.norm(mu,sigma)
+        
         minValProb = 0.2
         maxValProb = 0.2
+        minValProbFilter = 0.1
+        maxValProbFilter = 0.1
 
 
         estimated_safety_probs = []
@@ -178,7 +202,7 @@ def main():
             wlPer1 = max(min(wl1+noise1,wlMax),0)
             wlPers1.append(wlPer1)
             
-            stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,mu,sigma,filter_wl_disc,minValProb,maxValProb,wlMax)
+            stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,mu_filter,sigma_filter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax)
             wlEst1 = wlEstFromStateDist(stateDist1,filter_wl_disc)
             wlEsts1.append(wlEst1)
             
@@ -194,9 +218,27 @@ def main():
             wlPer2 = max(min(wl2+noise2,wlMax),0)
             wlPers2.append(wlPer2)
             
-            stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,mu,sigma,filter_wl_disc,minValProb,maxValProb,wlMax)
+            stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,mu_filter,sigma_filter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax)
             wlEst2 = wlEstFromStateDist(stateDist2,filter_wl_disc)
             wlEsts2.append(wlEst2)
+
+
+            ## ADDME: compute water tank safety here
+            wlid1 = math.ceil(max(min(wlEst1,wlMax),0)/delta_wl)
+            wlid2 = math.ceil(max(min(wlEst2,wlMax),0)/delta_wl)
+            tankSafeProbThisTime = 1-computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,safe_prob_base_dir)
+
+            ## ADDME: compute water tank safety here
+            wlid1 = math.ceil(max(min(wl1,wlMax),0)/delta_wl)
+            wlid2 = math.ceil(max(min(wl2,wlMax),0)/delta_wl)
+            if wl1 <= 0 or wl2 <= 0 or wl1>wlMax or wl2>wlMax:
+                tankTrueSafeProbThisTime=0
+            else:
+                tankTrueSafeProbThisTime = 1-computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,safe_prob_base_dir)
+
+            estimated_safety_probs.append(tankSafeProbThisTime)
+            true_safety_probs.append(tankTrueSafeProbThisTime)
+
 
             ## compute control tank 1
             if wlEst1<ctrlThreshLower or (wlEst1<ctrlThreshUpper and contAction1==1):
@@ -210,8 +252,6 @@ def main():
                 contAction2=1
             else:
                 contAction2=0
-            
-
             
             
             ## Global controller
@@ -255,21 +295,6 @@ def main():
             wlEstErrs2.append(wlEst2-wl2)
             allPerErrs.append(wlEst2-wl2)
 
-            ## ADDME: compute water tank safety here
-            wlid1 = math.ceil(max(min(wlEst1,wlMax),0)/delta_wl)
-            wlid2 = math.ceil(max(min(wlEst2,wlMax),0)/delta_wl)
-            tankSafeProbThisTime = 1-computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,safe_prob_base_dir)
-
-            ## ADDME: compute water tank safety here
-            wlid1 = math.ceil(max(min(wl1,wlMax),0)/delta_wl)
-            wlid2 = math.ceil(max(min(wl2,wlMax),0)/delta_wl)
-            if wl1 <= 0 or wl2 <= 0 or wl1>wlMax or wl2>wlMax:
-                tankTrueSafeProbThisTime=0
-            else:
-                tankTrueSafeProbThisTime = 1-computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,safe_prob_base_dir)
-
-            estimated_safety_probs.append(tankSafeProbThisTime)
-            true_safety_probs.append(tankTrueSafeProbThisTime)
 
             if(wl1<=0 or wl1>wlMax):
                 unsafe=1
@@ -289,7 +314,7 @@ def main():
         
         allTrialLengths.append(len(estimated_safety_probs))
 
-        print("Trial len: " + str(allTrialLengths[-1]))
+        # print("Trial len: " + str(allTrialLengths[-1]))
 
         unsafes=unsafes+unsafe
         
@@ -302,12 +327,12 @@ def main():
                 crash_this_time = 1
             else:
                 crash_this_time = 0
-            if unsafe==1:
-                print("Time: " + str(time))
-                print("Crash: " + str(crash_this_time))
-                print("Safe prob est: " + str(safeProb))
-                print("Safe prob true: " + str(true_safety_probs[time]))
-                input("Press enter to conintue")
+            # if unsafe==1:
+                # print("Time: " + str(time))
+                # print("Crash: " + str(crash_this_time))
+                # print("Safe prob est: " + str(safeProb))
+                # print("Safe prob true: " + str(true_safety_probs[time]))
+                # input("Press enter to conintue")
             allSafeUnsafe.append(crash_this_time)
             if time in safe_probs_per_time:
                 safe_probs_per_time[time].append(safeProb)
@@ -327,7 +352,7 @@ def main():
             plt.plot(wlEsts2,'g')
             plt.ylim(0, wlMax)
             plt.savefig("tempTrialPlot.png")
-            input("Press enter to conintue")
+            # input("Press enter to conintue")
             plt.clf()
 
 
@@ -356,6 +381,9 @@ def main():
     
     print('number of crashes: ' + str(unsafes) + ', ' + str(unsafes/numTrials))
     print('average length of scenario: ' + str(np.mean(allTrialLengths)))
+
+    # allSafeProbs.sort()
+    # allTrueSafeProbs.sort()
 
     ## check for calibration
     # bin at level of 0.1
@@ -404,6 +432,55 @@ def main():
             print("[" + str(bin_lower) + "," + str(bin_upper) + "]: No data in this bin")
 
 
+    ## calibration with adaptive binning
+    allSafetyProbs = []
+    [allSafetyProbs.append(p) for p in allSafeProbs]
+    [allSafetyProbs.append(p) for p in allTrueSafeProbs]
+    print("Len safety probs: " + str(len(allSafetyProbs)))
+    _,safety_prob_intervals_est_state = pd.qcut(allSafetyProbs,q=num_bins,retbins=True,duplicates="drop")
+    # _,safety_prob_intervals_true_state = pd.qcut(allTrueSafeProbs,q=num_bins,retbins=True)
+
+    binned_counts_adaptive = dict()
+    binned_counts_true_adaptive = dict()
+
+    for i in range(len(allSafeProbs)):
+        conf = allSafeProbs[i]
+        confTrue = allTrueSafeProbs[i]
+        safeUnsafe = allSafeUnsafe[i] # 0 if safe, 1 if unsafe
+        
+        
+        bin = get_bin_adaptive(conf,safety_prob_intervals_est_state)
+        # print("conf: " + str(confs[j]) + ", bin: " + str(bin))
+        if bin in binned_counts_adaptive:
+            binned_counts_adaptive[bin][0]+=safeUnsafe
+            binned_counts_adaptive[bin][1]+=1
+        else:
+            binned_counts_adaptive[bin]=[safeUnsafe,1]
+
+
+        bin = get_bin_adaptive(confTrue,safety_prob_intervals_est_state)
+        if bin in binned_counts_true_adaptive:
+            binned_counts_true_adaptive[bin][0]+=safeUnsafe
+            binned_counts_true_adaptive[bin][1]+=1
+        else:
+            binned_counts_true_adaptive[bin]=[safeUnsafe,1]
+
+    print("Adaptive calibration across all classes conf monitor using state estimates")
+    for bin in binned_counts_adaptive:
+        if binned_counts_adaptive[bin][1] != 0:
+            # print(binned_counts[bin])
+            print(str(bin) + ": " + str(1-float(binned_counts_adaptive[bin][0]/binned_counts_adaptive[bin][1])) + ", " + str(binned_counts_adaptive[bin][1]-binned_counts_adaptive[bin][0]) + "/" + str(binned_counts_adaptive[bin][1]))
+        else:
+            print(str(bin) + ": No data in this bin")
+
+    print("Adaptive calibration across all classes conf monitor using actual state")
+    for bin in binned_counts_true_adaptive:
+        if binned_counts_true_adaptive[bin][1] != 0:
+            # print(binned_counts[bin])
+            print(str(bin) + ": " + str(1-float(binned_counts_true_adaptive[bin][0]/binned_counts_true_adaptive[bin][1])) + ", " + str(binned_counts_true_adaptive[bin][1]-binned_counts_true_adaptive[bin][0]) + "/" + str(binned_counts_true_adaptive[bin][1]))
+        else:
+            print(str(bin) + ": No data in this bin")
+
     if plotMonitorCalibration:
 
 
@@ -419,13 +496,29 @@ def main():
             if binned_counts[bin][1] != 0:
                 x_vals_inst.append(bin_avg)
                 y_vals_inst.append(1-float(binned_counts[bin][0]/binned_counts[bin][1]))
+            
+        x_vals_inst_true = []
+        y_vals_inst_true = []
+
+        for bin in binned_counts_true:
+            bin_lower = bin/num_bins
+            bin_upper = (bin+1)/num_bins
+            bin_avg = (bin_upper+bin_lower)/2
+
+            if binned_counts_true[bin][1] != 0:
+                x_vals_inst_true.append(bin_avg)
+                y_vals_inst_true.append(1-float(binned_counts_true[bin][0]/binned_counts_true[bin][1]))
+
         
-        plt.plot(x_vals_inst,y_vals_inst, 'r-')
+        plt.plot(x_vals_inst,y_vals_inst, 'b*')
+        plt.plot(x_vals_inst_true,y_vals_inst_true, 'r*')
         plt.xlabel("Monitor Safety Probability")
         plt.ylabel("Empirical Safety Probability")
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.0])
         plt.legend(["Instantaneous Classifier Confidence", "Average Classifier Confidence"])
         plt.savefig(plotSaveDir + "/monitorOutputVEmpiricalSafety.png")
-
+        plt.clf()
 
 
     ## Compute Brier score
@@ -448,6 +541,7 @@ def main():
 
 
         # Plot ROC curve
+        plt.clf()
         plt.plot(fpr, tpr, 'b-', label='ROC curve (area = %0.3f)' % roc_auc)
         plt.plot(fpr_GT_state, tpr_GT_state, 'r-', label='ROC curve (area = %0.3f)' % roc_auc_GT_state)
         plt.plot([0, 1], [0, 1], 'k--')  # random predictions curve

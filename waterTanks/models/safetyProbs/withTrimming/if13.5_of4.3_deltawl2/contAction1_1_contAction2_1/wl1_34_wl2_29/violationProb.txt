@@ -2,11 +2,71 @@ PRISM
 =====
 
 Version: 4.5
-Date: Thu Dec 15 14:12:56 EST 2022
+Date: Thu Dec 15 16:16:32 EST 2022
 Hostname: ash01
 Memory limits: cudd=1g, java(heap)=15.5g
 Command line: prism ../../models/withTrimming/if13.5_of4.3_deltawl2/waterTankBaseline.prism ../../models/tankPropsSink.props -const 'wlidInit1=34,wlidInit2=29,initContAction1=1,initContAction2=1' -javamaxmem 16g
 
 Parsing model file "../../models/withTrimming/if13.5_of4.3_deltawl2/waterTankBaseline.prism"...
 
-Error: Syntax error ("[", line 35, column 92).
+Parsing properties file "../../models/tankPropsSink.props"...
+
+1 property:
+(1) Pmax=? [ F (sink=1) ]
+
+Type:        MDP
+Modules:     PRISMLattice 
+Variables:   wlid1 wlidPer1 contAction1 contAction1G wlid2 wlidPer2 contAction2 contAction2G currN tankFlag sink timesteps 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (sink=1) ]
+Model constants: wlidInit1=34,initContAction1=1,wlidInit2=29,initContAction2=1
+
+Building model...
+Model constants: wlidInit1=34,initContAction1=1,wlidInit2=29,initContAction2=1
+
+Computing reachable states...
+
+Reachability (BFS): 76 iterations in 2.53 seconds (average 0.033237, setup 0.00)
+
+Time for model construction: 29.979 seconds.
+
+Warning: Deadlocks detected and fixed in 4981 states
+
+Type:        MDP
+States:      185290 (1 initial)
+Transitions: 753061
+Choices:     193736
+
+Transition matrix: 190057 nodes (21 terminal), 753061 minterms, vars: 37r/37c/1nd
+
+Prob0A: 47 iterations in 1.16 seconds (average 0.024745, setup 0.00)
+
+Prob1E: 85 iterations in 1.91 seconds (average 0.022518, setup 0.00)
+
+yes = 2493, no = 128491, maybe = 54306
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=2, levels=37, nodes=251339] [11.5 MB]
+Adding sparse bits... [levels=18-37, num=5177, compact=2/2] [1.2 MB]
+Creating vector for yes... [dist=2, compact] [361.9 KB]
+Allocating iteration vectors... [3 x 1.4 MB]
+TOTAL: [17.3 MB]
+
+Starting iterations...
+
+Iterative method: 69 iterations in 98.71 seconds (average 0.008609, setup 98.12)
+
+Value in the initial state: 0.06004623443629544
+
+Time for model checking: 355.503 seconds.
+
+Result: 0.06004623443629544 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There was 1 warning during computation.
+

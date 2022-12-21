@@ -1,0 +1,72 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Fri Dec 16 01:39:05 EST 2022
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../../models/withTrimming/if13.5_of4.3_deltawl1/waterTankBaseline.prism ../../models/tankPropsSink.props -const 'wlidInit1=82,wlidInit2=50,initContAction1=1,initContAction2=0' -javamaxmem 16g
+
+Parsing model file "../../models/withTrimming/if13.5_of4.3_deltawl1/waterTankBaseline.prism"...
+
+Parsing properties file "../../models/tankPropsSink.props"...
+
+1 property:
+(1) Pmax=? [ F (sink=1) ]
+
+Type:        MDP
+Modules:     PRISMLattice 
+Variables:   wlid1 wlidPer1 contAction1 contAction1G wlid2 wlidPer2 contAction2 contAction2G currN tankFlag sink timesteps 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (sink=1) ]
+Model constants: wlidInit1=82,initContAction1=1,wlidInit2=50,initContAction2=0
+
+Building model...
+Model constants: wlidInit1=82,initContAction1=1,wlidInit2=50,initContAction2=0
+
+Computing reachable states...
+
+Reachability (BFS): 76 iterations in 2.85 seconds (average 0.037539, setup 0.00)
+
+Time for model construction: 33.331 seconds.
+
+Warning: Deadlocks detected and fixed in 5064 states
+
+Type:        MDP
+States:      140953 (1 initial)
+Transitions: 936648
+Choices:     142681
+
+Transition matrix: 81150 nodes (26 terminal), 936648 minterms, vars: 41r/41c/1nd
+
+Prob0A: 70 iterations in 0.13 seconds (average 0.001814, setup 0.00)
+
+Prob1E: 29 iterations in 0.05 seconds (average 0.001655, setup 0.00)
+
+yes = 2736, no = 77232, maybe = 60985
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=2, levels=41, nodes=90033] [4.1 MB]
+Adding sparse bits... [levels=28-41, num=909, compact=2/2] [1.1 MB]
+Creating vector for yes... [dist=2, compact] [275.3 KB]
+Allocating iteration vectors... [3 x 1.1 MB]
+TOTAL: [8.7 MB]
+
+Starting iterations...
+
+Iterative method: 66 iterations in 6.55 seconds (average 0.003409, setup 6.33)
+
+Value in the initial state: 0.03505743867899656
+
+Time for model checking: 6.762 seconds.
+
+Result: 0.03505743867899656 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There was 1 warning during computation.
+

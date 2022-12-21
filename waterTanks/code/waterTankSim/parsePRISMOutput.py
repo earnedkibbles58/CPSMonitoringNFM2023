@@ -8,11 +8,15 @@ def computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,base_dir
     if wlid2>wlid1:
         temp = wlid1
         wlid1 = wlid2
-        wlid2=temp
+        wlid2 = temp
+
+        temp = contAction1
+        contAction1 = contAction2
+        contAction2 = temp
 
 
     file_name = base_dir + "contAction1_" + str(contAction1) + "_contAction2_" + str(contAction2) + "/wl1_" + str(wlid1) + "_wl2_" + str(wlid2) + "/violationProb.txt"
-
+    
     # print(obst_type_int)
     with open(file_name, "r") as f:
         count = 0
@@ -36,6 +40,8 @@ def computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,base_dir
                 # print("Violation prob: " + str(violation_prob))
                 # print(violation_prob)
 
+                # input("Wait")
+
                 return violation_prob
             except Exception as e:
                 print("Error in evaluation")
@@ -50,14 +56,14 @@ def computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,base_dir
 def main():
 
     wlMax = 100
-    deltawl = 2
+    deltawl = 1
     wlidMax = int(wlMax/deltawl)+1
     trimming = True
 
     if trimming:
-        base_dir = "../../models/safetyProbs/withTrimming/if13.5_of4.3_deltawl" + str(deltawl) + "/"
+        base_dir = "../../models/safetyProbs/withTrimming/upperLimit90/if13.5_of4.3_deltawl" + str(deltawl) + "/"
     else:
-        base_dir = "../../models/safetyProbs/noTrimming/if13.5_of4.3_deltawl" + str(deltawl) + "/"
+        base_dir = "../../models/safetyProbs/noTrimming/upperLimit90/if13.5_of4.3_deltawl" + str(deltawl) + "/"
     wlids = range(1,wlidMax)
 
     
@@ -66,8 +72,12 @@ def main():
 
             safeProbs = []
             for wlid1 in range(1,wlidMax):
+                # if not wlid1==67:
+                #     continue
                 tempSafeProbs = []
                 for wlid2 in range(1,wlidMax):
+                    # if wlid2>wlid1:
+                    #     continue
                     tempSafeProb = 1-computeViolationFromWaterLevels(wlid1,wlid2,contAction1,contAction2,base_dir)
                     tempSafeProbs.append(tempSafeProb)
 
@@ -76,13 +86,14 @@ def main():
 
                 safeProbs.append(tempSafeProbs)
 
+            # continue
             WLIDSY,WLIDSX = np.meshgrid(wlids,wlids)
 
 
             if trimming:
-                plots_save_dir = "../../results/safetyProbPlots/withTrimming/deltawl_" + str(deltawl) + "/"
+                plots_save_dir = "../../results/safetyProbPlots/withTrimming/upperLimit90/deltawl_" + str(deltawl) + "/"
             else:
-                plots_save_dir = "../../results/safetyProbPlots/noTrimming/deltawl_" + str(deltawl) + "/"
+                plots_save_dir = "../../results/safetyProbPlots/noTrimming/upperLimit90/deltawl_" + str(deltawl) + "/"
             os.makedirs(plots_save_dir,exist_ok=True)
 
 
