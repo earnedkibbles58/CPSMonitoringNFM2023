@@ -49,6 +49,7 @@ for j=1:numTrials
     minValProbFilter = 0.1;
     maxValProbFilter = 0.1;
 
+    perceptionWarmUpSteps = 0;%10;
     
     wl1 = wlInit1;
     noises1 = [];
@@ -97,6 +98,34 @@ for j=1:numTrials
     end
     stateDist2 = stateDist2/sum(stateDist2);
 
+    for i=1:perceptionWarmUpSteps
+        
+        % run perception tank 1
+        r=rand;
+        if(r<minValProb)
+            noise1=-100;
+        elseif(r>(1-maxValProb))
+            noise1=100;
+        else
+            noise1 = random(noiseDist,1);
+        end
+        wlPer1 = max(min(wl1+noise1,wlMax),0);        
+        stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
+ 
+        % run perception tank 2
+        r=rand;
+        if(r<minValProb)
+            noise2=-100;
+        elseif(r>(1-maxValProb))
+            noise2=100;
+        else
+            noise2 = random(noiseDist,1);
+        end
+        wlPer2 = max(min(wl2+noise2,wlMax),0);
+        stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
+    end
+    
+    
     for i=1:numSteps
         % run perception tank 1
         r=rand;
