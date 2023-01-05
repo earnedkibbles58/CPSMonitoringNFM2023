@@ -1,0 +1,51 @@
+mdp
+
+const int freq = 10;
+const int carPosThreshFollowing=40;
+const int initPos;
+const int initSpeed;
+const int initCont;
+const int initState;
+const int otherCarSpeed=20;
+const int goalCarSpeedLower=25;
+
+const int goalCarSpeedUpper=25;
+
+const int obstSpeed=0;
+
+module LECMarkovChain
+
+    carSpeed : [0..initSpeed+100] init initSpeed;
+    carPos : [0..initPos+100] init initPos;
+
+    carSpeedDet : [-initSpeed-100..initSpeed+200] init initSpeed;
+
+    carPosDet : [-initPos-100..initPos+200] init initPos;
+
+    seqflag : [0..2] init initState;
+    perFlag : [0..1] init 0;
+
+    lecDet : [0..1] init 0;
+
+    accelCommand : [-100..100] init initCont;
+
+    time : [0..30] init 30;
+
+    // generate detection output
+    [] seqflag=0&perFlag=0 -> 0.26888495836099696:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+1) + 0.05269363991451256:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-2) + 0.27240400913850493:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+0) + 0.1616183948706755:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+2) + 0.05534674625985889:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+3) + 0.010999336723413654:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+4) + 0.15542781339820075:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-1) + 0.010372908836318053:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-3) + 0.0010317635787456707:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-17) + 0.0012897044734320885:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-20) + 0.0007001252855774195:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-23) + 0.0014370992703957558:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+5) + 0.0009396418306433788:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-19) + 0.0006817009359569611:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-16) + 0.0010501879283661291:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-4) + 0.0010317635787456707:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-21) + 0.000902793131402462:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-18) + 0.0003500626427887097:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-15) + 9.212174810229198e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-28) + 0.00014739479696366717:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-27) + 0.0005343061389932938:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-24) + 3.684869924091679e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-30) + 0.00025794089468641763:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-26) + 0.0004053356916500849:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-25) + 0.0002026678458250424:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-14) + 0.0007369739848183363:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-22) + 9.212174810229198e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+6) + 1.8424349620458396e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-11) + 1.8424349620458396e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+8) + 3.684869924091679e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+7) + 9.212174810229198e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-13) + 9.212174810229198e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-5) + 1.8424349620458396e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-29) + 5.527304886137519e-05:(seqflag'=0)&(perFlag'=1)&(carSpeedDet'=carSpeed+-12);
+    [] seqflag=0&perFlag=1 -> 0.990474611246223:(seqflag'=1)&(perFlag'=0)&(lecDet'=0) + 0.009525388753776991:(seqflag'=1)&(perFlag'=0)&(lecDet'=1);
+
+
+    [] seqflag=1&lecDet=0&carSpeedDet>goalCarSpeedUpper -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=0&carSpeedDet<goalCarSpeedLower -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=0&carSpeedDet>=goalCarSpeedLower&carSpeedDet<=goalCarSpeedUpper -> (seqflag'=2)&(accelCommand'=10);
+
+    [] seqflag=1&lecDet=1&carSpeedDet>=otherCarSpeed&carPosDet>carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=1&carSpeedDet>=otherCarSpeed&carPosDet<=carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=-10);
+    [] seqflag=1&lecDet=1&carSpeedDet<otherCarSpeed&carPosDet>carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=10);
+    [] seqflag=1&lecDet=1&carSpeedDet<otherCarSpeed&carPosDet<=carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=0);
+
+
+    // compute carPos, carSpeed
+    [] seqflag=2&carSpeed>0&time>0 -> (carSpeed'=min(initSpeed+100,max(0,carSpeed+round(accelCommand/freq))))&(seqflag'=0)&(time'=time-1);
+endmodule

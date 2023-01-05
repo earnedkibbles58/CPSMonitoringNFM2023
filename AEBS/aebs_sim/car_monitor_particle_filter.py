@@ -13,9 +13,9 @@ PARTICLE_SPEED_NOISE = 5
 
 NOTHING_DIST = -100
 
-PARTICLE_DYN_DIST_NOISE = 2 # FIXME: was 1
-PARTICLE_DYN_VEL_NOISE = 2 #FIXME: was 1
-PARTICLE_DYN_OBST_VEL_NOISE = 1
+PARTICLE_DYN_DIST_NOISE = 1 # FIXME: was 1
+PARTICLE_DYN_VEL_NOISE = 1 #FIXME: was 1
+PARTICLE_DYN_OBST_VEL_NOISE = 1 #FIXME: was 1
 
 PARTICLE_DYN_OBST_CLASS_FLIP = 0.1 ## FIXME: was 0.1
 
@@ -139,6 +139,17 @@ class particleFilter:
             self.allParticles[len(self.allParticles)-1][i] = curr_particle
 
 
+
+    def step_filter_perception(self,est_obst,est_dist,est_vel,car_vel):
+        weights = self.compute_weights(est_obst,est_dist,est_vel,car_vel)
+        self.resample_particles(weights)
+        return self.allParticles[len(self.allParticles)-1]
+
+    def step_filter_dynamics(self,control_command):
+        self.step_dynamics(control_command)
+        return self.allParticles[len(self.allParticles)-1]
+
+    ## FIXME: don't use this
     def step_filter(self,est_obst,est_dist,est_vel,car_vel,control_command):
         # takes in the sensor readings and advances the filter by one step
         self.step_dynamics(control_command)
@@ -192,6 +203,9 @@ class particleFilter:
 
         pred_dist = mean(all_dist)
         pred_vel = mean(all_vel)
+
+        # print("PF dists: " + str(all_dist))
+        # print("PF vels: " + str(all_vel))
 
         if pred_obst==0:
             assert pred_dist == NOTHING_DIST

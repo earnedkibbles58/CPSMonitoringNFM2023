@@ -34,8 +34,6 @@ def classification_model_fixed_acc(true_obst,accs):
     labels = [0,1]
     det = random.choices(labels,weights = det_probs, k=1)[0]
 
-    if det==2: ## FIXME: redo this once we've rerun PRISM
-        det=1
     return det, confs
 
 
@@ -58,7 +56,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
     episode_length = 60
     time_step = 0.1
 
-    init_car_dist = 25
+    init_car_dist = 20 #FIXME: was 25
     init_car_vel = 8
     num_unsafe = 0
 
@@ -70,28 +68,27 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
     ERRONEOUS_OBJ_DET_DIST = 10
 
-    OBJ_DIST_NOISE = 2 ## FIXME: was 1
-    OBJ_VEL_NOISE = 2
-    CAR_VEL_EST_NOISE = 1 ## FIXME: was 10
+    OBJ_DIST_NOISE = 1 ## FIXME: was 1
+    OBJ_VEL_NOISE = 1 ## FIXME: was 1
+    CAR_VEL_EST_NOISE = 1 ## FIXME: was 1
 
     w = World(init_car_dist, init_car_vel, "nothing", 0, dist_disc, vel_disc, episode_length, time_step)
 
     obsts_str = ["nothing","car"]
     obsts_vel = [0,8]
     
-    fixed_accs = [[0.7,0.3],[0.2,0.8]]
+    fixed_accs = [[0.95,0.05],[0.05,0.95]]
     
 
-    # dataSaveDir = "../results/pfDataForModeling/"
-    dataSaveDir = "../results/pfDataForModeling/noObst/"
+    dataSaveDir = "../results/pfDataForModeling/noObst_28/"
+    # dataSaveDir = "../results/pfDataForModeling/carObst_28/"
     os.makedirs(dataSaveDir,exist_ok=True)
 
-    # plotSaveDir = "../results/pfDebugging/"
-    plotSaveDir = "../results/pfDebugging/noObst/"
-    trialSaveDir = plotSaveDir + "trials/"
-    pfSaveDirBase = plotSaveDir + "pfPlots/"
-    os.makedirs(trialSaveDir,exist_ok=True)
-    os.makedirs(trialSaveDir,exist_ok=True)
+    # plotSaveDir = "../results/pfDebugging/noObst/"
+    # trialSaveDir = plotSaveDir + "trials/"
+    # pfSaveDirBase = plotSaveDir + "pfPlots/"
+    # os.makedirs(trialSaveDir,exist_ok=True)
+    # os.makedirs(trialSaveDir,exist_ok=True)
 
     allGTDists = []
     allGTVels = []
@@ -101,8 +98,8 @@ def main(initSeeds = None,initNumTrajectories=100000):
     allPFVels = []
     allPFObsts = []
 
-    max_dist = 0
-    max_vel = 0
+    max_dist = 50
+    max_vel = 50
 
 
     for step in range(trialNumLow, trialNumLow+numTrajectories):
@@ -117,7 +114,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
         true_obst_str = obsts_str[true_obst]
         true_obst_vel = obsts_vel[true_obst]
 
-        init_car_vel = 12 if true_obst == 0 else 8
+        init_car_vel = 10 if true_obst == 0 else 8
 
         w.reset(init_car_dist, init_car_vel, true_obst_str, true_obst_vel)
 
@@ -126,8 +123,43 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
         pf = particleFilter(init_car_vel,fixed_accs,time_step,dist_disc,vel_disc,max_dist=max_dist,max_vel=max_vel)
         
+        pf_pred_dist,pf_pred_vel,pf_pred_obst = pf.get_filter_state()
+
+        # print("Initial states")
+        # print("GT state: " + str([w.car_dist,w.car_vel-true_obst_vel]))
+        # print("PF state: " + str([pf_pred_dist,pf_pred_vel]))
+
         gtDists = []
         gtVels = []
+
+        ## give PF a few steps to warmup
+        PF_warmup_steps = 5
+        for _ in range(PF_warmup_steps):
+            pred_obj_ind, _ = classification_model_fixed_acc(true_obst,fixed_accs)
+            pred_obj = obsts_str[pred_obj_ind]
+
+            if pred_obj == "nothing":
+                obj_dist = 0
+                obj_dist_mon = 15
+                obj_vel = 0
+            elif pred_obj == "car":
+                if true_obst_str == "nothing":
+                    obj_dist = ERRONEOUS_OBJ_DET_DIST
+                    obj_dist_mon = obj_dist
+                else:
+                    obj_dist = w.car_dist
+                    obj_dist_mon = obj_dist
+                obj_vel = obsts_vel[1]
+            
+            obj_vel_mon = obj_vel + np.random.normal(0,OBJ_VEL_NOISE,1)[0]
+            obj_dist_mon += np.random.normal(0,OBJ_DIST_NOISE,1)[0]
+            car_vel_est = w.car_vel + np.random.normal(0,CAR_VEL_EST_NOISE,1)[0]
+
+            # print("Perception: " + str([pred_obj_ind,obj_dist_mon,obj_vel_mon,car_vel_est]))
+
+            ## run perception through filter and resample particles here
+            _ = pf.step_filter_perception(pred_obj_ind,obj_dist_mon,obj_vel_mon,car_vel_est)
+
 
         ## keep track of previous 
         for e in range(episode_length):
@@ -153,32 +185,42 @@ def main(initSeeds = None,initNumTrajectories=100000):
             
             obj_vel_mon = obj_vel + np.random.normal(0,OBJ_VEL_NOISE,1)[0]
             obj_dist_mon += np.random.normal(0,OBJ_DIST_NOISE,1)[0]
+            car_vel_est = w.car_vel + np.random.normal(0,CAR_VEL_EST_NOISE,1)[0]
+
+            # print("Perception: " + str([pred_obj_ind,obj_dist_mon,obj_vel_mon,car_vel_est]))
+
+            ## run perception through filter and resample particles here
+            particles = pf.step_filter_perception(pred_obj_ind,obj_dist_mon,obj_vel_mon,car_vel_est)
 
             pf_pred_dist,pf_pred_vel,pf_pred_obst = pf.get_filter_state()
 
-            # print("True state: " + str([w.car_dist,w.car_vel-true_obst_vel,true_obst]))
-            # print("PF state: " + str([pf_pred_dist,pf_pred_vel,pf_pred_obst]))
-            # car_dist, car_vel, crash, done, control_command = w.step(pred_obj, obj_dist, obj_vel, return_command=True)
-            car_dist, car_vel, crash, done, control_command = w.step_predVel(obsts_str[pf_pred_obst], pf_pred_dist, pf_pred_vel, return_command=True)
+            # print("GT state: " + str([w.car_dist,w.car_vel-true_obst_vel]))
+            # print("PF state: " + str([pf_pred_dist,pf_pred_vel]))
 
-            # print("Control Command: " + str(control_command))
-            car_vel_est = car_vel + np.random.normal(0,CAR_VEL_EST_NOISE,1)[0]
+            
 
-            particles = pf.step_filter(pred_obj_ind,obj_dist_mon,obj_vel_mon,car_vel_est,control_command)
-            # max_dist = max(max_dist,max([p[0] for p in particles]))
-            # max_vel = max(max_vel,max([abs(p[1]) for p in particles]))
-
-            pf_pred_dist,pf_pred_vel,pf_pred_obst = pf.get_filter_state()
-
-            allGTDists.append(car_dist)
-            allGTVels.append(car_vel-true_obst_vel)
+            allGTDists.append(w.car_dist)
+            allGTVels.append(w.car_vel-true_obst_vel)
             allGTObsts.append(true_obst)
 
             allPFDists.append(pf_pred_dist)
             allPFVels.append(pf_pred_vel)
             allPFObsts.append(pf_pred_obst)
 
+            # car_dist, car_vel, crash, done, control_command = w.step(pred_obj, obj_dist, obj_vel, return_command=True)
 
+            ## FIXME: use PF prediction
+            car_dist, car_vel, crash, done, control_command = w.step_predVel(obsts_str[pf_pred_obst], pf_pred_dist, pf_pred_vel, return_command=True)
+
+            ## FIXME: use actual state
+            # car_dist, car_vel, crash, done, control_command = w.step_predVel(obsts_str[true_obst], w.car_dist, w.car_vel-true_obst_vel, return_command=True)
+
+
+            # print("GT state: " + str([w.car_dist,w.car_vel-true_obst_vel]))
+
+
+
+            _ = pf.step_filter_dynamics(control_command)
 
             if done:
                 if crash:
@@ -212,6 +254,8 @@ def main(initSeeds = None,initNumTrajectories=100000):
         pickle.dump(allPFVels,f)
     with open(dataSaveDir + "pfObsts.pkl",'wb') as f:
         pickle.dump(allPFObsts,f)
+    with open(dataSaveDir + "percentCrash.pkl",'wb') as f:
+        pickle.dump([num_unsafe,numTrajectories],f)
 
 
     # print("Maximum distance: " + str(max_dist))

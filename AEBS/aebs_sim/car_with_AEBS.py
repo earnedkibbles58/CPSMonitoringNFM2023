@@ -5,16 +5,18 @@ import matplotlib.pyplot as plt
 
 
 # safety params
-CAR_POS_THRESH_FOLLOWING = 20 # m
-CAR_VEL_LOWER_BOUND_CAR = 4 # m/s
-CAR_POS_FOLLOWING_LOWER_BOUND = 14 # m
-CAR_POS_FOLLOWING_UPPER_BOUND = 10000#30 # m
-CAR_VEL_LOWER_BOUND_NOTHING = 3 # m/s
-CAR_VEL_UPPER_BOUND_NOTHING = 3 # m/s
+CAR_VEL_LOWER_BOUND_CAR = 6 # m/s #FIXME: was 4
+CAR_VEL_UPPER_BOUND_CAR = 12 # m/s #FIXME: was 10
+CAR_POS_FOLLOWING_LOWER_BOUND = 15 # m
+CAR_POS_FOLLOWING_UPPER_BOUND = 25#30 # m
+CAR_VEL_LOWER_BOUND_NOTHING = 1.5 # m/s #FIXME: was 2
+CAR_VEL_UPPER_BOUND_NOTHING = 1.5 # m/s #FIXME: was 2
 
 # controller params
 GOAL_CAR_SPEED = 10 # m/s
-GOAL_CAR_SPEED_THRESH = 1 # m/s
+GOAL_CAR_SPEED_THRESH = 0 # m/s #FIXME: was 1
+
+CAR_POS_THRESH_FOLLOWING = 20 # m
 
 ACCEL_RATE = 4 # m/s^2
 BRAKE_RATE = -4 # m/s^2
@@ -118,7 +120,7 @@ class World:
         if self.obst_type == "nothing" and self.car_vel <= CAR_VEL_LOWER_BOUND_NOTHING:
             collision = 1
         
-        if self.obst_type == "car" and (self.car_vel <= CAR_VEL_LOWER_BOUND_CAR or self.car_dist <= CAR_POS_FOLLOWING_LOWER_BOUND):
+        if self.obst_type == "car" and (self.car_vel <= CAR_VEL_LOWER_BOUND_CAR or self.car_vel >= CAR_VEL_UPPER_BOUND_CAR or self.car_dist <= CAR_POS_FOLLOWING_LOWER_BOUND):
             collision = 1
             # print("Collision: dist " + str(self.car_dist) + ", vel " + str(self.car_vel))
 
@@ -169,7 +171,7 @@ class World:
         if self.obst_type == "nothing" and (self.car_vel <= GOAL_CAR_SPEED-CAR_VEL_LOWER_BOUND_NOTHING or self.car_vel >= GOAL_CAR_SPEED+CAR_VEL_UPPER_BOUND_NOTHING):
             collision = 1
         
-        if self.obst_type == "car" and (self.car_vel <= CAR_VEL_LOWER_BOUND_CAR or self.car_dist <= CAR_POS_FOLLOWING_LOWER_BOUND or self.car_dist >= CAR_POS_FOLLOWING_UPPER_BOUND):
+        if self.obst_type == "car" and (self.car_vel <= CAR_VEL_LOWER_BOUND_CAR or self.car_vel >= CAR_VEL_UPPER_BOUND_CAR or self.car_dist <= CAR_POS_FOLLOWING_LOWER_BOUND or self.car_dist >= CAR_POS_FOLLOWING_UPPER_BOUND):
             collision = 1
             # print("Collision: dist " + str(self.car_dist) + ", vel " + str(self.car_vel))
 
@@ -227,9 +229,9 @@ class World:
 
     def car_vel_controller_pred_vel(self, car_vel):
         command = 0
-        if self.car_vel < GOAL_CAR_SPEED-GOAL_CAR_SPEED_THRESH:
+        if car_vel < GOAL_CAR_SPEED-GOAL_CAR_SPEED_THRESH:
             command = ACCEL_RATE
-        elif self.car_vel > GOAL_CAR_SPEED+GOAL_CAR_SPEED_THRESH:
+        elif car_vel > GOAL_CAR_SPEED+GOAL_CAR_SPEED_THRESH:
             command = BRAKE_RATE
         return command
 
