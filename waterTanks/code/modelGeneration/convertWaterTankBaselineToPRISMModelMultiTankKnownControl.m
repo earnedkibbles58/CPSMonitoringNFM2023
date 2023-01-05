@@ -15,7 +15,7 @@ fprintf(fid, '\n \n');
 for i=1:numTanks
     fprintf(fid, 'const int wlidInit%i;\n',i);
     fprintf(fid, 'const int initContAction%i;\n',i);
-    fprintf(fid, 'const int initContActionG%i\n;',i);
+    fprintf(fid, 'const int initContActionG%i;\n',i);
 end
 fprintf(fid, 'const int initCurrN;\n');
 
