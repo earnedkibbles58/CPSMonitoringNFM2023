@@ -1,7 +1,8 @@
 seed = 23443;
+% seed = 8968;
 rng(seed);
 
-numTrials = 1;
+numTrials = 100;
 
 unsafes = 0;
 
@@ -23,21 +24,32 @@ for j=1:numTrials
     wlInit1=unifrnd(wlInitLow,wlInitHigh);
     wlInit2=unifrnd(wlInitLow,wlInitHigh);
     
-    ctrlThreshLower = 20;
-    ctrlThreshUpper = 80;
+%     wlInit1=50;
+%     wlInit2=50;
     
-    numSteps = 300;%50;
-    contAction1 = 0;
-    contAction2 = 0;
+    ctrlThreshLower = 10;
+    ctrlThreshUpper = 90;
+    
+    numSteps = 50;
+    contAction1 = randi(2)-1;
+    contAction2 = randi(2)-1;
     
     unsafe = 0;
     % noise params
     mu = 0;
     sigma = 5;
     noiseDist = makedist('Normal','mu',mu,'sigma',sigma);
-    minValProb = 0.1;
-    maxValProb = 0.1;
+    
+    mu_filter = 0;
+    sigma_filter = 2;
+    noiseDistFilter = makedist('Normal','mu',mu_filter,'sigma',sigma_filter);
+    minValProb = 0.2;
+    maxValProb = 0.2;
+    
+    minValProbFilter = 0.1;
+    maxValProbFilter = 0.1;
 
+    perceptionWarmUpSteps = 0;%10;
     
     wl1 = wlInit1;
     noises1 = [];
@@ -61,7 +73,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist1 = [stateDist1 1];
         else
             stateDist1 = [stateDist1 0];
@@ -77,7 +89,7 @@ for j=1:numTrials
         if curr_wl>wlMax
             break
         end
-        if curr_wl>wlInitLow && curr_wl<wlInitHigh
+        if curr_wl>=wlInitLow && curr_wl<=wlInitHigh
             stateDist2 = [stateDist2 1];
         else
             stateDist2 = [stateDist2 0];
@@ -86,6 +98,34 @@ for j=1:numTrials
     end
     stateDist2 = stateDist2/sum(stateDist2);
 
+    for i=1:perceptionWarmUpSteps
+        
+        % run perception tank 1
+        r=rand;
+        if(r<minValProb)
+            noise1=-100;
+        elseif(r>(1-maxValProb))
+            noise1=100;
+        else
+            noise1 = random(noiseDist,1);
+        end
+        wlPer1 = max(min(wl1+noise1,wlMax),0);        
+        stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
+ 
+        % run perception tank 2
+        r=rand;
+        if(r<minValProb)
+            noise2=-100;
+        elseif(r>(1-maxValProb))
+            noise2=100;
+        else
+            noise2 = random(noiseDist,1);
+        end
+        wlPer2 = max(min(wl2+noise2,wlMax),0);
+        stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
+    end
+    
+    
     for i=1:numSteps
         % run perception tank 1
         r=rand;
@@ -101,7 +141,7 @@ for j=1:numTrials
         wlPer1 = max(min(wl1+noise1,wlMax),0);
         wlPers1 = [wlPers1;wlPer1];
         
-        stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,noiseDist,filter_wl_disc,minValProb,maxValProb,wlMax);
+        stateDist1 = bayesMonitorPerception(stateDist1,wlPer1,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
         wlEst1 = wlEstFromStateDist(stateDist1,filter_wl_disc);
         
         
@@ -119,7 +159,7 @@ for j=1:numTrials
         wlPer2 = max(min(wl2+noise2,wlMax),0);
         wlPers2 = [wlPers2;wlPer2];
         
-        stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,noiseDist,filter_wl_disc,minValProb,maxValProb,wlMax);
+        stateDist2 = bayesMonitorPerception(stateDist2,wlPer2,noiseDistFilter,filter_wl_disc,minValProbFilter,maxValProbFilter,wlMax);
         wlEst2 = wlEstFromStateDist(stateDist2,filter_wl_disc);
 
         % compute control tank 1
@@ -130,7 +170,7 @@ for j=1:numTrials
         end
         
         % compute control tank 2
-        if wlEst2<ctrlThreshLower || (wlEst1<ctrlThreshUpper && contAction2==1)
+        if wlEst2<ctrlThreshLower || (wlEst2<ctrlThreshUpper && contAction2==1)
             contAction2=1;
         else
             contAction2=0;
@@ -141,13 +181,13 @@ for j=1:numTrials
         %% Global controller
         contActionG1=contAction1;
         contActionG2=contAction2;
-        if(contAction1==1 && contAction2==1 && wlPer1<=wlPer2)
+        if(contAction1==1 && contAction2==1 && wlEst1<wlEst2)
             contActionG1=1;
             contActionG2=0;
-        elseif(contAction1==1 && contAction2==1 && wlPer1>wlPer2)
+        elseif(contAction1==1 && contAction2==1 && wlEst1>wlEst2)
             contActionG1=0;
             contActionG2=1;
-        elseif(contAction1==1 && contAction2==1)
+        elseif(contAction1==1 && contAction2==1 && wlEst1==wlEst2)
             r = rand;
             if r<=0.5
                 contActionG1=1;
@@ -159,7 +199,7 @@ for j=1:numTrials
             end
         end
         
-        
+
         
         %% Update water levels
         %     contAction
@@ -236,8 +276,6 @@ for j=1:numTrials
 %     end
     
 end
-unsafes
-unsafes/numTrials
 
 
 maxPerErr = max(abs(allPerErrs));
@@ -269,6 +307,10 @@ for i=1:length(thisKeys)
     
     
 end
+
+
+unsafes
+unsafes/numTrials
 
 
 

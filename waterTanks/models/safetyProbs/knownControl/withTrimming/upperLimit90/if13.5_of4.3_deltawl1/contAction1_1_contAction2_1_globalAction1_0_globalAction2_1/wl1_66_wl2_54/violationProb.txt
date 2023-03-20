@@ -1,0 +1,72 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Thu Dec 22 18:01:27 EST 2022
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../../models/knownControl/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism ../../models/tankPropsSink.props -const 'wlidInit1=66,wlidInit2=54,initContAction1=1,initContAction2=1,initContActionG1=0,initContActionG2=1,initCurrN=2' -javamaxmem 16g
+
+Parsing model file "../../models/knownControl/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism"...
+
+Parsing properties file "../../models/tankPropsSink.props"...
+
+1 property:
+(1) Pmax=? [ F (sink=1) ]
+
+Type:        MDP
+Modules:     PRISMLattice 
+Variables:   wlid1 wlidPer1 contAction1 contAction1G wlid2 wlidPer2 contAction2 contAction2G currN tankFlag sink timesteps 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (sink=1) ]
+Model constants: wlidInit1=66,initContAction1=1,initContActionG1=0,wlidInit2=54,initContAction2=1,initContActionG2=1,initCurrN=2
+
+Building model...
+Model constants: wlidInit1=66,initContAction1=1,initContActionG1=0,wlidInit2=54,initContAction2=1,initContActionG2=1,initCurrN=2
+
+Computing reachable states...
+
+Reachability (BFS): 71 iterations in 2.22 seconds (average 0.031282, setup 0.00)
+
+Time for model construction: 27.568 seconds.
+
+Warning: Deadlocks detected and fixed in 7799 states
+
+Type:        MDP
+States:      268980 (1 initial)
+Transitions: 1870385
+Choices:     274360
+
+Transition matrix: 415216 nodes (33 terminal), 1870385 minterms, vars: 41r/41c/1nd
+
+Prob0A: 51 iterations in 0.63 seconds (average 0.012392, setup 0.00)
+
+Prob1E: 14 iterations in 0.14 seconds (average 0.009643, setup 0.00)
+
+yes = 4251, no = 146244, maybe = 118485
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=2, levels=41, nodes=503977] [23.1 MB]
+Adding sparse bits... [levels=13-41, num=15958, compact=2/2] [1.0 MB]
+Creating vector for yes... [dist=2, compact] [525.4 KB]
+Allocating iteration vectors... [3 x 2.1 MB]
+TOTAL: [30.8 MB]
+
+Starting iterations...
+
+Iterative method: 60 iterations in 254.58 seconds (average 0.017033, setup 253.56)
+
+Value in the initial state: 0.004817175643104665
+
+Time for model checking: 255.517 seconds.
+
+Result: 0.004817175643104665 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There was 1 warning during computation.
+

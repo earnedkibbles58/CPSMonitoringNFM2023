@@ -1,0 +1,74 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Sat Dec 17 00:04:34 EST 2022
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../../models/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism ../../models/tankPropsSink.props -const 'wlidInit1=58,wlidInit2=55,initContAction1=1,initContAction2=1' -javamaxmem 16g
+
+Parsing model file "../../models/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism"...
+
+Parsing properties file "../../models/tankPropsSink.props"...
+
+1 property:
+(1) Pmax=? [ F (sink=1) ]
+
+Type:        MDP
+Modules:     PRISMLattice 
+Variables:   wlid1 wlidPer1 contAction1 contAction1G wlid2 wlidPer2 contAction2 contAction2G currN tankFlag sink timesteps 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (sink=1) ]
+Model constants: wlidInit1=58,initContAction1=1,wlidInit2=55,initContAction2=1
+
+Building model...
+Model constants: wlidInit1=58,initContAction1=1,wlidInit2=55,initContAction2=1
+
+Computing reachable states...
+
+Reachability (BFS): 76 iterations in 3.99 seconds (average 0.052553, setup 0.00)
+
+Time for model construction: 42.861 seconds.
+
+Warning: Deadlocks detected and fixed in 37026 states
+
+Type:        MDP
+States:      1117217 (1 initial)
+Transitions: 7707514
+Choices:     1135141
+
+Transition matrix: 923146 nodes (37 terminal), 7707514 minterms, vars: 41r/41c/1nd
+
+Prob0A: 62 iterations in 4.04 seconds (average 0.065194, setup 0.00)
+
+Prob1E: 14 iterations in 0.77 seconds (average 0.054714, setup 0.00)
+
+yes = 19568, no = 623657, maybe = 473992
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=2, levels=41, nodes=1180839] [54.1 MB]
+Adding sparse bits... [levels=12-37, num=30621, compact=2/2] [1.7 MB]
+Creating vector for yes... [dist=2, compact] [2.1 MB]
+Allocating iteration vectors... [3 x 8.5 MB]
+TOTAL: [83.4 MB]
+
+Starting iterations...
+Iteration 33: max relative diff=1.000000, 5.04 sec so far
+Iteration 66: max relative diff=0.004627, 10.08 sec so far
+
+Iterative method: 69 iterations in 2304.27 seconds (average 0.152000, setup 2293.78)
+
+Value in the initial state: 0.002628098534308146
+
+Time for model checking: 2327.526 seconds.
+
+Result: 0.002628098534308146 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There was 1 warning during computation.
+

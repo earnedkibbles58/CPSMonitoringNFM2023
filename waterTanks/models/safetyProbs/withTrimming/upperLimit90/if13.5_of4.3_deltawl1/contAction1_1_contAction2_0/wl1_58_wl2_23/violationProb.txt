@@ -1,0 +1,72 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Sat Dec 17 00:04:12 EST 2022
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../../models/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism ../../models/tankPropsSink.props -const 'wlidInit1=58,wlidInit2=23,initContAction1=1,initContAction2=0' -javamaxmem 16g
+
+Parsing model file "../../models/withTrimming/upperLimit90/if13.5_of4.3_deltawl1/waterTankBaseline.prism"...
+
+Parsing properties file "../../models/tankPropsSink.props"...
+
+1 property:
+(1) Pmax=? [ F (sink=1) ]
+
+Type:        MDP
+Modules:     PRISMLattice 
+Variables:   wlid1 wlidPer1 contAction1 contAction1G wlid2 wlidPer2 contAction2 contAction2G currN tankFlag sink timesteps 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (sink=1) ]
+Model constants: wlidInit1=58,initContAction1=1,wlidInit2=23,initContAction2=0
+
+Building model...
+Model constants: wlidInit1=58,initContAction1=1,wlidInit2=23,initContAction2=0
+
+Computing reachable states...
+
+Reachability (BFS): 76 iterations in 3.63 seconds (average 0.047763, setup 0.00)
+
+Time for model construction: 52.141 seconds.
+
+Warning: Deadlocks detected and fixed in 22378 states
+
+Type:        MDP
+States:      539679 (1 initial)
+Transitions: 3708763
+Choices:     543051
+
+Transition matrix: 501207 nodes (32 terminal), 3708763 minterms, vars: 41r/41c/1nd
+
+Prob0A: 35 iterations in 0.35 seconds (average 0.010086, setup 0.00)
+
+Prob1E: 14 iterations in 0.18 seconds (average 0.012857, setup 0.00)
+
+yes = 1960, no = 523158, maybe = 14561
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=1, levels=41, nodes=51869] [2.4 MB]
+Adding sparse bits... [levels=26-26, num=1333, compact=1/1] [931.2 KB]
+Creating vector for yes... [dist=2, compact] [1.0 MB]
+Allocating iteration vectors... [3 x 4.1 MB]
+TOTAL: [16.7 MB]
+
+Starting iterations...
+
+Iterative method: 31 iterations in 1.79 seconds (average 0.008613, setup 1.53)
+
+Value in the initial state: 5.967090996121725E-4
+
+Time for model checking: 2.292 seconds.
+
+Result: 5.967090996121725E-4 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There was 1 warning during computation.
+
