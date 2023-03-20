@@ -63,7 +63,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
     max_dist = 100
     max_vel = 30
 
-    dist_disc = 0.5
+    dist_disc = 0.25 ## FIXME: had been 0.5
     vel_disc = 0.4
 
     ERRONEOUS_OBJ_DET_DIST = 10
@@ -77,10 +77,11 @@ def main(initSeeds = None,initNumTrajectories=100000):
     obsts_str = ["nothing","car"]
     obsts_vel = [0,8]
     
-    fixed_accs = [[0.95,0.05],[0.05,0.95]]
+    # fixed_accs = [[0.95,0.05],[0.05,0.95]]
+    fixed_accs = [[1,0],[0,1]]
     
 
-    dataSaveDir = "../results/pfDataForModeling/noObst_28/"
+    dataSaveDir = "../results/pfDataForModeling/noObst_29_distDisc0.25/"
     # dataSaveDir = "../results/pfDataForModeling/carObst_28/"
     os.makedirs(dataSaveDir,exist_ok=True)
 
@@ -107,7 +108,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
         # print("Trial " + str(step),flush=True)
 
         # true_obst = random.choice([0,1])
-        true_obst = 0
+        true_obst = 1
 
         # print("True obst: " + str(obsts_str[true_obst]))
 

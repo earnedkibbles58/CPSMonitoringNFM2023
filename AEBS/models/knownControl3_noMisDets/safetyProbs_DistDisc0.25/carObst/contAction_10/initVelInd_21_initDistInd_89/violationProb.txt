@@ -1,0 +1,74 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Tue Jan 24 14:36:42 EST 2023
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../models/knownControl3_noMisDets/carModel_DistDisc0.25_car.prism ../models/knownControl3/props_car_distDisc0.25.props -const 'initPos=89,initSpeed=21,initCont=10,initState=2' -javamaxmem 16g
+
+Parsing model file "../models/knownControl3_noMisDets/carModel_DistDisc0.25_car.prism"...
+
+Parsing properties file "../models/knownControl3/props_car_distDisc0.25.props"...
+
+1 property:
+(1) Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=60)|(carPos>=100) ]
+
+Type:        MDP
+Modules:     LECMarkovChain 
+Variables:   carSpeed carPos carSpeedDet carPosDet seqflag perFlag lecDet accelCommand time 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=60)|(carPos>=100) ]
+Model constants: initPos=89,initSpeed=21,initCont=10,initState=2
+
+Building model...
+Model constants: initPos=89,initSpeed=21,initCont=10,initState=2
+
+Warning: Update 1 of command 1 of module "LECMarkovChain" doesn't do anything (line 35, column 33)
+
+Computing reachable states...
+
+Reachability (BFS): 151 iterations in 5.85 seconds (average 0.038722, setup 0.00)
+
+Time for model construction: 7.61 seconds.
+
+Warning: Deadlocks detected and fixed in 4926 states
+
+Type:        MDP
+States:      433286 (1 initial)
+Transitions: 744859
+Choices:     433286
+
+Transition matrix: 319806 nodes (132 terminal), 744859 minterms, vars: 51r/51c/0nd
+
+Prob0A: 39 iterations in 1.52 seconds (average 0.038897, setup 0.00)
+
+Prob1E: 918 iterations in 25.50 seconds (average 0.027773, setup 0.00)
+
+yes = 82870, no = 121199, maybe = 229217
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=1, levels=51, nodes=386228] [17.7 MB]
+Adding sparse bits... [levels=15-15, num=9462, compact=1/1] [851.9 KB]
+Creating vector for yes... [dist=2, compact] [846.3 KB]
+Allocating iteration vectors... [3 x 3.3 MB]
+TOTAL: [29.3 MB]
+
+Starting iterations...
+
+Iterative method: 145 iterations in 139.78 seconds (average 0.011262, setup 138.15)
+
+Value in the initial state: 2.479313367342696E-4
+
+Time for model checking: 167.08 seconds.
+
+Result: 2.479313367342696E-4 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There were 2 warnings during computation.
+

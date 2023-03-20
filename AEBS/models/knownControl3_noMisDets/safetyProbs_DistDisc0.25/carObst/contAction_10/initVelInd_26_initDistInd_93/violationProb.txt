@@ -1,0 +1,74 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Tue Jan 24 14:47:43 EST 2023
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../models/knownControl3_noMisDets/carModel_DistDisc0.25_car.prism ../models/knownControl3/props_car_distDisc0.25.props -const 'initPos=93,initSpeed=26,initCont=10,initState=2' -javamaxmem 16g
+
+Parsing model file "../models/knownControl3_noMisDets/carModel_DistDisc0.25_car.prism"...
+
+Parsing properties file "../models/knownControl3/props_car_distDisc0.25.props"...
+
+1 property:
+(1) Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=60)|(carPos>=100) ]
+
+Type:        MDP
+Modules:     LECMarkovChain 
+Variables:   carSpeed carPos carSpeedDet carPosDet seqflag perFlag lecDet accelCommand time 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=60)|(carPos>=100) ]
+Model constants: initPos=93,initSpeed=26,initCont=10,initState=2
+
+Building model...
+Model constants: initPos=93,initSpeed=26,initCont=10,initState=2
+
+Warning: Update 1 of command 1 of module "LECMarkovChain" doesn't do anything (line 35, column 33)
+
+Computing reachable states...
+
+Reachability (BFS): 151 iterations in 7.48 seconds (average 0.049523, setup 0.00)
+
+Time for model construction: 9.364 seconds.
+
+Warning: Deadlocks detected and fixed in 5398 states
+
+Type:        MDP
+States:      432294 (1 initial)
+Transitions: 738365
+Choices:     432294
+
+Transition matrix: 370425 nodes (132 terminal), 738365 minterms, vars: 51r/51c/0nd
+
+Prob0A: 39 iterations in 1.36 seconds (average 0.034846, setup 0.00)
+
+Prob1E: 1036 iterations in 25.56 seconds (average 0.024675, setup 0.00)
+
+yes = 101687, no = 124081, maybe = 206526
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=1, levels=51, nodes=391667] [17.9 MB]
+Adding sparse bits... [levels=15-15, num=9570, compact=1/1] [702.5 KB]
+Creating vector for yes... [dist=2, compact] [844.3 KB]
+Allocating iteration vectors... [3 x 3.3 MB]
+TOTAL: [29.3 MB]
+
+Starting iterations...
+
+Iterative method: 145 iterations in 125.29 seconds (average 0.011062, setup 123.68)
+
+Value in the initial state: 0.032680643153517146
+
+Time for model checking: 152.512 seconds.
+
+Result: 0.032680643153517146 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There were 2 warnings during computation.
+

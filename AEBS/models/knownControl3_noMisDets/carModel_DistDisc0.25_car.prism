@@ -1,0 +1,53 @@
+mdp
+
+const int freq = 10;
+const int carPosThreshFollowing=80;
+const int initPos;
+const int initSpeed;
+const int initCont;
+const int initState;
+const int otherCarSpeed=20;
+const int goalCarSpeedLower=25;
+
+const int goalCarSpeedUpper=25;
+
+const int obstSpeed=20;
+
+module LECMarkovChain
+
+    carSpeed : [0..initSpeed+100] init initSpeed;
+    carPos : [0..initPos+100] init initPos;
+
+    carSpeedDet : [-initSpeed-100..initSpeed+200] init initSpeed;
+
+    carPosDet : [-initPos-100..initPos+200] init initPos;
+
+    seqflag : [0..2] init initState;
+    perFlag : [0..2] init 0;
+
+    lecDet : [0..1] init 0;
+
+    accelCommand : [-100..100] init initCont;
+
+    time : [0..30] init 30;
+
+    // generate detection output
+    [] seqflag=0&perFlag=0 -> 0:(seqflag'=0)&(perFlag'=1)&(lecDet'=0) + 1:(seqflag'=0)&(perFlag'=1)&(lecDet'=1);
+    [] seqflag=0&perFlag=1&lecDet=0 -> 0.27147082349005536:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+1))) + 0.0532003943525698:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+-2))) + 0.2750237169590566:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+0))) + 0.16317267806322214:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+2))) + 0.05587901560668491:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+3))) + 0.011105117282687614:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+4))) + 0.15692256180361788:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+-1))) + 0.01047266504213254:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+-3))) + 0.0014509198459792768:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+5))) + 0.0010602875797540883:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+-4))) + 9.30076824345691e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+6))) + 1.860153648691382e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+8))) + 3.720307297382764e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+7))) + 9.30076824345691e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(goalCarSpeedUpper+1,max(goalCarSpeedLower-1,carSpeed+-5)));
+    [] seqflag=0&perFlag=1&lecDet=1 -> 0.10122344944774343:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+3))) + 0.1472387425658556:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+2))) + 0.16954970263384184:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+1))) + 0.16817332200512372:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+0))) + 0.04659303313508753:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-3))) + 0.08922684791843237:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-2))) + 0.1300594732370406:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-1))) + 0.02079864061172465:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-4))) + 0.05986406117246988:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+4))) + 0.030620220900594047:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+5))) + 0.012557349192863337:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+6))) + 0.0057604078164825425:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+7))) + 0.0004418011894647411:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-7))) + 0.008326253186066227:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-5))) + 0.002616822429906537:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+8))) + 0.0015802888700084982:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+9))) + 0.0009855564995751923:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+10))) + 0.0021920135938827525:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-6))) + 0.0001699235344095157:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+15))) + 0.00020390824129141885:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+14))) + 0.0004757858963466443:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+12))) + 0.00030586236193712833:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+13))) + 0.0006966864910790151:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+11))) + 1.699235344095157e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-9))) + 0.00013593882752761257:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+-8))) + 1.699235344095157e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+16))) + 1.699235344095157e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+19))) + 8.496176720475786e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+17))) + 5.097706032285471e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+18))) + 1.699235344095157e-05:(seqflag'=0)&(perFlag'=2)&(carPosDet'=min(carPosThreshFollowing+1,max(carPosThreshFollowing-1,carPos+20)));
+    [] seqflag=0&perFlag=2&lecDet=1 -> 0.0935429056924338:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+3))) + 0.17308411214956243:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+1))) + 0.05016142735768714:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+4))) + 0.14504672897197118:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+2))) + 0.09813084112149044:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-2))) + 0.14596431605778326:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-1))) + 0.17668649107904688:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+0))) + 0.05344095157179059:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-3))) + 0.007731520815632903:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-5))) + 0.022259983007646394:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-4))) + 0.021189464740866512:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+5))) + 0.0022259983007646552:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+7))) + 0.0072727272727272155:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+6))) + 0.0005607476635514023:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+8))) + 0.0004248088360237895:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-7))) + 0.0020050977060322873:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-6))) + 1.699235344095157e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-9))) + 0.0001699235344095157:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-8))) + 1.699235344095157e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+-10))) + 6.796941376380628e-05:(seqflag'=1)&(perFlag'=0)&(carSpeedDet'=min(otherCarSpeed+1,max(otherCarSpeed-1,carSpeed+9)));
+
+
+    [] seqflag=1&lecDet=0&carSpeedDet>goalCarSpeedUpper -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=0&carSpeedDet<goalCarSpeedLower -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=0&carSpeedDet>=goalCarSpeedLower&carSpeedDet<=goalCarSpeedUpper -> (seqflag'=2)&(accelCommand'=10);
+
+    [] seqflag=1&lecDet=1&carSpeedDet>=otherCarSpeed&carPosDet>carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=0);
+    [] seqflag=1&lecDet=1&carSpeedDet>=otherCarSpeed&carPosDet<=carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=-10);
+    [] seqflag=1&lecDet=1&carSpeedDet<otherCarSpeed&carPosDet>carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=10);
+    [] seqflag=1&lecDet=1&carSpeedDet<otherCarSpeed&carPosDet<=carPosThreshFollowing -> (seqflag'=2)&(accelCommand'=0);
+
+
+    // compute carPos, carSpeed
+    [] seqflag=2&carSpeed>0&carPos>0&time>0 -> (carPos'=min(initPos,max(0,round(carPos-1.6*(carSpeed-obstSpeed)/freq))))&(carSpeed'=min(initSpeed+100,max(0,carSpeed+round(accelCommand/freq))))&(seqflag'=0)&(time'=time-1);
+endmodule

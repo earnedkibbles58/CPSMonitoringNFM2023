@@ -1,0 +1,74 @@
+PRISM
+=====
+
+Version: 4.5
+Date: Tue Jan 17 22:04:27 EST 2023
+Hostname: ash01
+Memory limits: cudd=1g, java(heap)=15.5g
+Command line: prism ../models/knownControl3_noMisDets/carModel_DistDisc0.5_car.prism ../models/knownControl3/props_car.props -const 'initPos=48,initSpeed=26,initCont=-10,initState=2' -javamaxmem 16g
+
+Parsing model file "../models/knownControl3_noMisDets/carModel_DistDisc0.5_car.prism"...
+
+Parsing properties file "../models/knownControl3/props_car.props"...
+
+1 property:
+(1) Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=30)|(carPos>=50) ]
+
+Type:        MDP
+Modules:     LECMarkovChain 
+Variables:   carSpeed carPos carSpeedDet carPosDet seqflag perFlag lecDet accelCommand time 
+
+---------------------------------------------------------------------
+
+Model checking: Pmax=? [ F (carSpeed<=15)|(carSpeed>=30)|(carPos<=30)|(carPos>=50) ]
+Model constants: initPos=48,initSpeed=26,initCont=-10,initState=2
+
+Building model...
+Model constants: initPos=48,initSpeed=26,initCont=-10,initState=2
+
+Warning: Update 1 of command 1 of module "LECMarkovChain" doesn't do anything (line 35, column 33)
+
+Computing reachable states...
+
+Reachability (BFS): 151 iterations in 3.84 seconds (average 0.025437, setup 0.00)
+
+Time for model construction: 5.155 seconds.
+
+Warning: Deadlocks detected and fixed in 4639 states
+
+Type:        MDP
+States:      369239 (1 initial)
+Transitions: 639228
+Choices:     369239
+
+Transition matrix: 315551 nodes (148 terminal), 639228 minterms, vars: 51r/51c/0nd
+
+Prob0A: 39 iterations in 1.22 seconds (average 0.031205, setup 0.00)
+
+Prob1E: 899 iterations in 16.76 seconds (average 0.018638, setup 0.00)
+
+yes = 149574, no = 74043, maybe = 145622
+
+Computing remaining probabilities...
+Engine: Hybrid
+
+Building hybrid MTBDD matrices... [nm=1, levels=51, nodes=258802] [11.8 MB]
+Adding sparse bits... [levels=16-16, num=6955, compact=1/1] [815.6 KB]
+Creating vector for yes... [dist=2, compact] [721.2 KB]
+Allocating iteration vectors... [3 x 2.8 MB]
+TOTAL: [21.8 MB]
+
+Starting iterations...
+
+Iterative method: 145 iterations in 34.94 seconds (average 0.004841, setup 34.23)
+
+Value in the initial state: 1.8335214461869058E-6
+
+Time for model checking: 53.071 seconds.
+
+Result: 1.8335214461869058E-6 (value in the initial state)
+
+---------------------------------------------------------------------
+
+Note: There were 2 warnings during computation.
+

@@ -3,7 +3,7 @@ import subprocess
 import time
 import math
 
-distDisc = 0.5
+distDisc = 0.25 ## FIXME: had been 0.5
 velDisc = 0.4
 
 controlActions = [0,10,-10]
@@ -31,8 +31,8 @@ if verifNoObst:
 
             print("No obst, running " + str([velInd,controlAction]),flush=True)
 
-            dir_to_save = "../models/knownControl3/safetyProbs/noObst/contAction_" + str(controlAction) + "/initVelInd_" + str(velInd) + "/"
-            prism_model = "../models/knownControl3/carModel_DistDisc0.5_nothing.prism"
+            dir_to_save = "../models/knownControl3_noMisDets/safetyProbs/noObst/contAction_" + str(controlAction) + "/initVelInd_" + str(velInd) + "/"
+            prism_model = "../models/knownControl3_noMisDets/carModel_DistDisc" + str(distDisc) + "_nothing.prism"
             os.makedirs(dir_to_save,exist_ok=True)
             file_to_save = dir_to_save + "/violationProb.txt"
 
@@ -73,12 +73,12 @@ if verifCarObst:
 
                 print("Car obst, running " + str([distInd,velInd,controlAction]),flush=True)
 
-                dir_to_save = "../models/knownControl3/safetyProbs/carObst/contAction_" + str(controlAction) + "/initVelInd_" + str(velInd) + "_initDistInd_" + str(distInd) + "/"
-                prism_model = "../models/knownControl3/carModel_DistDisc0.5_car.prism"
+                dir_to_save = "../models/knownControl3_noMisDets/safetyProbs_DistDisc" + str(distDisc) + "/carObst/contAction_" + str(controlAction) + "/initVelInd_" + str(velInd) + "_initDistInd_" + str(distInd) + "/"
+                prism_model = "../models/knownControl3_noMisDets/carModel_DistDisc" + str(distDisc) + "_car.prism"
                 os.makedirs(dir_to_save,exist_ok=True)
                 file_to_save = dir_to_save + "/violationProb.txt"
 
-                props_file = "../models/knownControl3/props_car.props"
+                props_file = "../models/knownControl3/props_car_distDisc" + str(distDisc) + ".props"
 
                 with open(file_to_save,'w') as f:
                     process = subprocess.Popen(["nice", "-n 10", "/data2/mcleav/safetyContracts/ParamPerContracts/caseStudy/prism/prism-4.5/prism/bin/prism", prism_model, props_file, "-const", "initPos=" + str(distInd) + ",initSpeed=" + str(velInd) + ",initCont=" + str(controlAction) + ",initState=" + str(initSeqFlag), "-javamaxmem", "16g"],stdout=f)
@@ -90,3 +90,5 @@ if verifCarObst:
                     print("Sleeping for " + str(sleepTime) + " seconds",flush=True)
                     time.sleep(sleepTime)
                     print("Done sleeping")
+
+print("DONE!")

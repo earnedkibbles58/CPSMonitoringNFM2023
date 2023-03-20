@@ -8,6 +8,7 @@ import pickle
 
 
 
+PLOTERRORHISTS = True
 
 def customRound(val,discretization):
 
@@ -15,7 +16,7 @@ def customRound(val,discretization):
 
 def main():
 
-    dist_disc = 0.5
+    dist_disc = 0.25 ## FIXME: had been 0.5
     vel_disc = 0.4
 
     # dataSaveDir = "../results/pfDataForModeling/noObst_28/"
@@ -92,13 +93,17 @@ def main():
 
 
 def main_diffDistVelErrsPerDet():
-    dist_disc = 0.5
+    dist_disc = 0.25 ## FIXME: had been 0.25
     vel_disc = 0.4
 
     otherCarSpeed = 8
 
     # dataSaveDir = "../results/pfDataForModeling/noObst_28/"
-    dataSaveDir = "../results/pfDataForModeling/carObst_28/"
+    # dataSaveDir = "../results/pfDataForModeling/carObst_28/"
+    dataSaveDir = "../results/pfDataForModeling/noObst_29_distDisc0.25/"
+
+    plotSaveDir = "../results/AEBS_sim/run1_bugFixCrashVar_carObst_noObstDet_distDisc0.25/PFErrPlots/"
+    os.makedirs(plotSaveDir,exist_ok=True)
 
 
     ## save pf data for processing
@@ -174,6 +179,45 @@ def main_diffDistVelErrsPerDet():
     for i in range(len(allGTDists)):
         confusionMatrix[allGTObsts[i]][allPFObsts[i]] += 1
     print("Confusion Matrix: " + str(confusionMatrix))
+
+    if PLOTERRORHISTS:
+
+        # dist_errs = [] #[allPFDists[i]-allGTDists[i] for i in range(len(allGTDists))]
+        # vel_errs = [allPFVels[i]-allGTVels[i] for i in range(len(allGTVels))]
+
+        # for i in range(len(allPFDists)):
+        #     dist_err = allPFDists[i]-allGTDists[i]
+        #     # if abs(dist_err) > 50:
+        #     #     continue
+        #     dist_errs.append(dist_err)
+
+        pfDistErrs = [allPFDists[i]-allGTDists[i] for i in range(len(allPFDists))]
+        pfVelErrs = [allPFVels[i]-allGTVels[i] for i in range(len(allPFVels))]
+
+        min_dist_bin = math.floor(min(pfDistErrs)/dist_disc)
+        max_dist_bin = math.ceil(max(pfDistErrs)/dist_disc)
+        dist_bins = np.arange(min_dist_bin,max_dist_bin,dist_disc) #[i for i in range(min_dist_bin,max_dist_bin,dist_disc)]
+
+        plt.clf()
+        plt.hist(pfDistErrs,bins=dist_bins,edgecolor = "black")
+        plt.xlabel("State Estimator Distance Error")
+        plt.ylabel("Bin Counts")
+        # plt.xlim([0, 1])
+        # plt.ylim([-0.1, 1.1])
+        plt.savefig(plotSaveDir + "/pfDistErrorModel.png")
+
+
+        min_vel_bin = math.floor(min(pfVelErrs)/vel_disc)
+        max_vel_bin = math.ceil(max(pfVelErrs)/vel_disc)
+        vel_bins = np.arange(min_vel_bin,max_vel_bin,vel_disc) #[i for i in range(min_vel_bin,max_vel_bin,vel_disc)]
+        plt.clf()
+        plt.hist(pfVelErrs,bins=vel_bins,edgecolor = "black")
+        plt.xlabel("State Estimator Velocity Error")
+        plt.ylabel("Bin Counts")
+        # plt.xlim([0, 1])
+        # plt.ylim([-0.1, 1.1])
+        plt.savefig(plotSaveDir + "/pfVelErrorModel.png")
+
 
 if __name__ == '__main__':
     # main()

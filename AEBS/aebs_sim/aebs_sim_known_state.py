@@ -80,6 +80,48 @@ def get_bin_adaptive(conf,intervals):
     print("Error finding bin for conf=" + str(conf) + " and intervals: " + str(intervals))
     return -1
 
+
+def compute_ECE(binned_counts,binned_confs):
+
+        ECE = 0
+        running_data_count = 0
+        for bin in binned_counts:
+
+            bin_counts = binned_counts[bin]
+            bin_confs = binned_confs[bin]
+            
+            if bin_counts[1] != 0:
+                bin_acc = 1-bin_counts[0]/bin_counts[1]
+                bin_conf = np.mean(bin_confs)
+
+                ECE += bin_counts[1] * abs(bin_acc-bin_conf)
+                running_data_count += bin_counts[1]
+        
+        ECE = ECE/running_data_count
+        return ECE
+
+def compute_CCE(binned_counts,binned_confs):
+
+        CCE = 0
+        running_data_count = 0
+        for bin in binned_counts:
+
+            bin_counts = binned_counts[bin]
+            bin_confs = binned_confs[bin]
+            
+            if bin_counts[1] != 0:
+                bin_acc = 1-bin_counts[0]/bin_counts[1]
+                bin_conf = np.mean(bin_confs)
+
+                if bin_conf > bin_acc:
+                    CCE += bin_counts[1] * abs(bin_acc-bin_conf)
+                running_data_count += bin_counts[1]
+        
+        CCE = CCE/running_data_count
+        return CCE
+
+
+
 def main(initSeeds = None,initNumTrajectories=100000):
 
     random.seed(23624)
@@ -91,7 +133,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
     numTrajectories = 1000#250
 
     episode_length = 60
-    episode_length_PRISM = 30
+    episode_length_PRISM = 30 ##FIXME: was 30
     time_step = 0.1
 
     init_car_dist_base = 20 #FIXME: was 25
@@ -105,7 +147,7 @@ def main(initSeeds = None,initNumTrajectories=100000):
     max_dist = 100
     max_vel = 30
 
-    dist_disc = 0.5
+    dist_disc = 0.25 ## FIXME: was 0.5
     vel_disc = 0.4
 
     ERRONEOUS_OBJ_DET_DIST = 10
@@ -119,15 +161,26 @@ def main(initSeeds = None,initNumTrajectories=100000):
     obsts_str = ["nothing","car"]
     obsts_vel = [0,8]
     
-    fixed_accs = [[0.95,0.05],[0.05,0.95]]
+    # fixed_accs = [[0.95,0.05],[0.05,0.95]]
+    fixed_accs = [[1,0],[0,1]]
 
 
-    safe_prob_base_dir = "../models/knownControl3/safetyProbs/"
+    # safe_prob_base_dir = "../models/knownControl3_noMisDets/safetyProbs/"
+    safe_prob_base_dir = "../models/knownControl3_noMisDets/safetyProbs_DistDisc" + str(dist_disc) + "/"
 
 
-    dataSaveDir = "../results/AEBS_sim/run1/"
+
+    dataSaveDir = "../results/AEBS_sim/run1_bugFixCrashVar_carObst_noObstDet_distDisc" + str(dist_disc) + "_2/"
     plotSaveDir = dataSaveDir + "plots/"
     os.makedirs(plotSaveDir,exist_ok=True)
+    trialSaveDir = plotSaveDir + "trials/"
+    os.makedirs(trialSaveDir,exist_ok=True)
+    trialSafeSaveDirSafe = plotSaveDir + "trialsSafe/"
+    os.makedirs(trialSafeSaveDirSafe,exist_ok=True)
+    trialSafeSaveDirUnsafe = plotSaveDir + "trialsUnsafe/"
+    os.makedirs(trialSafeSaveDirUnsafe,exist_ok=True)
+    plotDataDir = dataSaveDir + "/data"
+    os.makedirs(plotDataDir,exist_ok=True)
 
     allGTDists = []
     allGTVels = []
@@ -148,18 +201,17 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
     allTrialLengths = []
 
-    plotMonitorCalibration = True
-    plotEachTrial = False
     plotAUCCurve = True
-    plotTrials = False
+    plotTrials = True
+    plotTrialsSafety = True
 
     for step in range(numTrajectories):
 
 
         print("Trial " + str(step),flush=True)
 
-        true_obst = random.choice([0,1])
-        # true_obst = 0
+        # true_obst = random.choice([0,1])
+        true_obst = 1
 
         # print("True obst: " + str(obsts_str[true_obst]))
 
@@ -187,6 +239,10 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
         gtDists = []
         gtVels = []
+
+        predDists = []
+        predVels = []
+        predObsts = []
 
         ## give PF a few steps to warmup
         PF_warmup_steps = 5
@@ -250,6 +306,10 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
             pf_pred_dist,pf_pred_vel,pf_pred_obst = pf.get_filter_state()
 
+            predDists.append(pf_pred_dist)
+            predVels.append(pf_pred_vel)
+            predObsts.append(pf_pred_obst)
+
             # print("GT state: " + str([w.car_dist,w.car_vel-true_obst_vel,true_obst]))
             # print("PF state: " + str([pf_pred_dist,pf_pred_vel,pf_pred_obst]))
 
@@ -273,7 +333,6 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
             ## FIXME: use actual state
             # car_dist, car_vel, crash, done, control_command = w.step_predVel(obsts_str[true_obst], w.car_dist, w.car_vel-true_obst_vel, return_command=True)
-
 
             #### compute safety probs
             ## ADDME: AEBS safety using state estimate and known control
@@ -331,20 +390,101 @@ def main(initSeeds = None,initNumTrajectories=100000):
 
             _ = pf.step_filter_dynamics(control_command)
 
+            # print("State: " + str([true_obst,prev_dist,prev_vel]))
+            if stateUnsafe(true_obst,prev_dist,prev_vel):
+                # print("State is unsafe")
+                crash = 1
+            else:
+                # print("State is safe")
+                crash = 0
 
-
-
-            if done:
-                if crash:
-                    num_unsafe += 1
-                    print("Unsafe")
-                # input("wait")
+            if crash:
+                num_unsafe += 1
+                print("Unsafe")
                 break
+ 
+
+            # if done or crash:
+            #     if crash:
+            #         num_unsafe += 1
+            #         print("Unsafe")
+            #     # input("wait")
+            #     break
         
         gtDists.append(w.car_dist)
         gtVels.append(w.car_vel-true_obst_vel)
         
         allTrialLengths.append(len(estimated_safety_probs))
+
+
+        if plotTrials:
+
+            plt.clf()
+            fig, ax = plt.subplots(3)
+
+            ax[0].plot(gtVels,'r', label="True Vel")
+            ax[0].plot(predVels,'b', label="Pred Vel")
+            ax[0].plot(predObsts,'g', label="Pred Obst")
+            ax[0].axhline(y=CAR_VEL_LOWER_BOUND_CAR-obsts_vel[1], color='grey', linestyle='--')
+            ax[0].axhline(y=CAR_VEL_UPPER_BOUND_CAR-obsts_vel[1], color='grey', linestyle='--')
+            # plt.ylim(0, wlMax)
+            ax[0].set(xlabel="Time (s)",ylabel="Velocity")
+            # plt.savefig(trialSaveDir + "/trial" + str(step) + "Vel.png")
+            ax[0].legend(loc="lower left")
+            # plt.savefig(trialSaveDir + "/trial" + str(step) + "Vel_noLegend.png")
+
+            ax[1].plot(gtDists,'r', label="True Dist")
+            ax[1].plot(predDists,'b', label="Pred Dist")
+            ax[1].plot(predObsts,'g', label="Pred Obst")
+            ax[1].axhline(y=CAR_POS_FOLLOWING_LOWER_BOUND, color='grey', linestyle='--')
+            ax[1].axhline(y=CAR_POS_FOLLOWING_UPPER_BOUND, color='grey', linestyle='--')
+            ax[1].set(xlabel="Time (s)",ylabel="Distance")
+            ax[1].set_ylim(0,CAR_POS_FOLLOWING_UPPER_BOUND+5)
+            # plt.savefig(trialSaveDir + "/trial" + str(step) + "Dist.png")
+            ax[1].legend(loc="lower left")
+            # plt.savefig(trialSaveDir + "/trial" + str(step) + ".png")
+
+
+
+            ax[2].plot(estimated_safety_probs,'b',label="Point estimate monitor")
+            ax[2].plot(estimated_safety_probs_state_dist,'g', label="State distribution monitor")
+            ax[2].plot(true_safety_probs,'r', label="True state monitor")
+            ax[2].set_ylim(0, 1.1)
+            ax[2].set(xlabel="Time (s)",ylabel="Safety Estimate")
+            ax[2].legend(loc="lower left")
+
+
+            plt.savefig(trialSaveDir + "/trial" + str(step) + ".png")
+
+            plt.clf()
+
+            plt.close()
+
+
+
+        if plotTrialsSafety:
+            plt.clf()
+            plt.plot(estimated_safety_probs,'b',label="Point estimate monitor")
+            plt.plot(estimated_safety_probs_state_dist,'g', label="State distribution monitor")
+            plt.plot(true_safety_probs,'r', label="True state monitor")
+            plt.ylim(0, 1.1)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Safety Estimate")
+            if crash == 0:
+                plt.savefig(trialSafeSaveDirSafe + "/trialSafety" + str(step) + ".png")
+            else:
+                plt.savefig(trialSafeSaveDirUnsafe + "/trialSafety" + str(step) + ".png")
+            
+            plt.legend(loc="lower left")
+            if crash == 0:
+                plt.savefig(trialSafeSaveDirSafe + "/trialSafety" + str(step) + "_noLegend.png")
+            else:
+                plt.savefig(trialSafeSaveDirUnsafe + "/trialSafety" + str(step) + "_noLegend.png")
+
+            # input("Press enter to conintue")
+            plt.clf()
+
+
 
         for time,safeProb in enumerate(estimated_safety_probs[0:episode_length]):
             allSafeProbs.append(safeProb)
@@ -362,16 +502,38 @@ def main(initSeeds = None,initNumTrajectories=100000):
     print('number of crashes: ' + str(num_unsafe) + ', ' + str(num_unsafe/numTrajectories))
     print('average length of scenario: ' + str(np.mean(allTrialLengths)))
 
+
+    with open(plotDataDir + "allSafeProbs.pkl",'wb') as f:
+        pickle.dump(allSafeProbs,f)
+    with open(plotDataDir + "allSafeProbsStateDist.pkl",'wb') as f:
+        pickle.dump(allSafeProbsStateDist,f)
+    with open(plotDataDir + "allTrueSafeProbs.pkl",'wb') as f:
+        pickle.dump(allTrueSafeProbs,f)
+
+    with open(plotDataDir + "allSafeUnsafe.pkl",'wb') as f:
+        pickle.dump(allSafeUnsafe,f)
+    
+
     ## check for calibration
     # bin at level of 0.1
     num_bins = 10
     binned_counts = {}
     binned_counts_state_dist = {}
     binned_counts_true = {}
+
+    binned_confs = {}
+    binned_confs_state_dist = {}
+    binned_confs_true = {}
+
     for bin in range(num_bins):
         binned_counts[bin] = [0,0]
         binned_counts_state_dist[bin] = [0,0]
         binned_counts_true[bin] = [0,0]
+
+        binned_confs[bin] = []
+        binned_confs_state_dist[bin] = []
+        binned_confs_true[bin] = []
+
 
     for i in range(len(allSafeProbs)):
         conf = allSafeProbs[i]
@@ -383,14 +545,17 @@ def main(initSeeds = None,initNumTrajectories=100000):
         # print("conf: " + str(confs[j]) + ", bin: " + str(bin))
         binned_counts[bin][0]+=safeUnsafe
         binned_counts[bin][1]+=1
+        binned_confs[bin].append(conf)
 
         bin = get_bin(confStateDist,num_bins)
         binned_counts_state_dist[bin][0]+=safeUnsafe
         binned_counts_state_dist[bin][1]+=1
+        binned_confs_state_dist[bin].append(confStateDist)
 
         bin = get_bin(confTrue,num_bins)
         binned_counts_true[bin][0]+=safeUnsafe
         binned_counts_true[bin][1]+=1
+        binned_confs_true[bin].append(confTrue)
 
 
     print("Calibration across all classes conf monitor using state estimates")
@@ -508,6 +673,25 @@ def main(initSeeds = None,initNumTrajectories=100000):
     print("Brier Score State Dist: " + str(brier_loss_state_dist))
     print("Brier Score GT State: " + str(brier_loss_GT_state))
 
+    ## compute ECE and ECCE
+    ## print ECE,CCE
+    state_monitor_ECE = compute_ECE(binned_counts,binned_confs)
+    dist_monitor_ECE = compute_ECE(binned_counts_state_dist,binned_confs_state_dist)
+    true_monitor_ECE = compute_ECE(binned_counts_true,binned_confs_true)
+
+    state_monitor_CCE = compute_CCE(binned_counts,binned_confs)
+    dist_monitor_CCE = compute_CCE(binned_counts_state_dist,binned_confs_state_dist)
+    true_monitor_CCE = compute_CCE(binned_counts_true,binned_confs_true)
+
+
+    print("State monitor ECE: " + str(state_monitor_ECE))
+    print("Dist monitor ECE: " + str(dist_monitor_ECE))
+    print("True monitor ECE: " + str(true_monitor_ECE))
+
+    print("State monitor CCE: " + str(state_monitor_CCE))
+    print("Dist monitor CCE: " + str(dist_monitor_CCE))
+    print("True monitor CCE: " + str(true_monitor_CCE))
+
 
     if plotAUCCurve:
 
@@ -521,12 +705,15 @@ def main(initSeeds = None,initNumTrajectories=100000):
         fpr_GT_state, tpr_GT_state, thresholds_GT_state = roc_curve(y_true, y_probs_GT_state)
         roc_auc_GT_state = auc(fpr_GT_state, tpr_GT_state)
 
+        print("Monitor AUC: " + str(roc_auc))
+        print("State Dist Monitor AUC: " + str(roc_auc_state_dist))
+        print("GT State AUC: " + str(roc_auc_GT_state))
 
         # Plot ROC curve
         plt.clf()
-        plt.plot(fpr, tpr, 'b-', label='ROC curve (area = %0.3f)' % roc_auc)
-        plt.plot(fpr_state_dist, tpr_state_dist, 'g-', label='ROC curve (area = %0.3f)' % roc_auc_state_dist)
-        plt.plot(fpr_GT_state, tpr_GT_state, 'r-', label='ROC curve (area = %0.3f)' % roc_auc_GT_state)
+        plt.plot(fpr, tpr, 'b-', label='Point Estimate Monitor')
+        plt.plot(fpr_state_dist, tpr_state_dist, 'g-', label='State Distribution Monitor')
+        plt.plot(fpr_GT_state, tpr_GT_state, 'r-', label='True State Monitor')
         plt.plot([0, 1], [0, 1], 'k--')  # random predictions curve
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.0])
@@ -535,9 +722,6 @@ def main(initSeeds = None,initNumTrajectories=100000):
         plt.title('Receiver Operating Characteristic')
         plt.legend(loc="lower right")
         plt.savefig(plotSaveDir + "/safetyMonitorAUCCurve.png")
-
-
-
 
 
 

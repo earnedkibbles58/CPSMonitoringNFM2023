@@ -48,6 +48,43 @@ def computeViolationAEBSKnownControl(distInd,velInd,obstClass,contCommand,base_d
     return -1
 
 
+
+
+def main_knownControl_noObst():
+
+    dataSaveDir = "../results/AEBS_sim/run1/"
+    plotSaveDir = dataSaveDir + "plotsSafetyResults/noObst/"
+    os.makedirs(plotSaveDir,exist_ok=True)
+
+    control_commands = [-4,0,4]
+    safe_prob_base_dir = "../models/knownControl3/safetyProbs/"
+
+    dummy_dist_val = 0
+    vel_inds = [21,22,23,24,25,26,27,28,29]
+    vel_disc = 0.4
+    vel_vals = []
+    for vel_ind in vel_inds:
+        vel_vals.append(vel_ind*vel_disc)
+
+
+    for control_command in control_commands:
+
+        safe_probs = []
+        for vel_ind in vel_inds:
+            safe_prob = 1-computeViolationAEBSKnownControl(dummy_dist_val,vel_ind,0,int(control_command/vel_disc),safe_prob_base_dir)
+            safe_probs.append(safe_prob)
+        
+        plt.plot(vel_vals,safe_probs)
+        plt.ylim([0.0, 1.1])
+        plt.xlabel('Car Velocity')
+        plt.ylabel('Safety Probability')
+        plt.title('Control Command ' + str(control_command))
+        plt.savefig(plotSaveDir + "safetyProbs_control" + str(control_command))
+        plt.clf()
+
+
+
+
 # def main():
 
 #     wlMax = 100
@@ -184,4 +221,4 @@ def computeViolationAEBSKnownControl(distInd,velInd,obstClass,contCommand,base_d
 #                     plt.savefig(plots_save_dir + "safeProbs_contAction1_" + str(contAction1) + "_contAction2_" + str(contAction2) + "_globalAction1_" + str(globalAction1) + "_globalAction2_" + str(globalAction2) + ".png")
 
 if __name__ == '__main__':
-    main_knownControl()
+    main_knownControl_noObst()

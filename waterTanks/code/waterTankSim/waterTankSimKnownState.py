@@ -62,6 +62,9 @@ def main():
     allTrueSafeProbsUnknownControl = []
     allSafeProbsStateDistUnknownControl = []
 
+    allWL1EstVars = []
+    allWL2EstVars = []
+    
     safe_probs_per_time = {}
     safe_unsafe_per_time = {}
     safe_probs_per_time_state_dist = {}
@@ -70,9 +73,9 @@ def main():
 
     allTrialLengths = []
 
-    plotMonitorCalibration = True
+    plotMonitorCalibration = False
     plotEachTrial = False
-    plotAUCCurve = True
+    plotAUCCurve = False
     plotTrials = True
     plotTrialsSafety = True
 
@@ -150,6 +153,8 @@ def main():
         estimated_safety_probs_state_dist_unknown_control = []
         true_safety_probs_unknown_control = []
 
+        wl1EstVars = []
+        wl2EstVars = []
 
         wl1 = wlInit1
         noises1 = []
@@ -278,6 +283,12 @@ def main():
                     contActionG1=0
                     contActionG2=1
             
+            ## ADDME: save water tank variance here
+            wl1EstVar = varianceOfStateEstimate(stateDist1,filter_wl_disc)
+            wl2EstVar = varianceOfStateEstimate(stateDist2,filter_wl_disc)
+
+            wl1EstVars.append(wl1EstVar)
+            wl2EstVars.append(wl2EstVar)
 
             ## ADDME: water tank safety using state estimate and known control
             wlid1 = math.ceil(max(min(wlEst1,wlMax),0)/delta_wl)
@@ -406,6 +417,8 @@ def main():
             allSafeProbsStateDistUnknownControl.append(estimated_safety_probs_state_dist_unknown_control[time])
             allTrueSafeProbsUnknownControl.append(true_safety_probs_unknown_control[time])
 
+            allWL1EstVars.append(wl1EstVars[time])
+            allWL2EstVars.append(wl2EstVars[time])
             
             if sum(safe_unsafe_over_time[time:time+numStepsPRISM]) >= 1:
                 crash_this_time = 1
@@ -432,12 +445,16 @@ def main():
         if plotTrials:
 
             plt.clf()
-            plt.plot(wls1,'r')
-            plt.plot(wls2,'b')
-            plt.plot(wlEsts1,'m')
-            plt.plot(wlEsts2,'g')
+            plt.plot(wls1,'r', label="Tank 1 Water Level")
+            plt.plot(wls2,'b', label="Tank 2 Water Level")
+            plt.plot(wlEsts1,'m', label="Tank 1 Estimated Water Level")
+            plt.plot(wlEsts2,'g', label="Tank 2 Water Level")
             plt.ylim(0, wlMax)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Water Level")
             plt.savefig(trialSaveDir + "/trial" + str(j) + ".png")
+            plt.legend(loc="lower left")
+            plt.savefig(trialSaveDir + "/trial" + str(j) + "_noLegend.png")
             # input("Press enter to conintue")
             plt.clf()
 
@@ -445,46 +462,60 @@ def main():
 
         if plotTrialsSafety:
             plt.clf()
-            plt.plot(estimated_safety_probs,'b')
-            plt.plot(estimated_safety_probs_state_dist,'g')
-            plt.plot(true_safety_probs,'r')
+            plt.plot(estimated_safety_probs,'b',label="Point estimate monitor")
+            plt.plot(estimated_safety_probs_state_dist,'g', label="State distribution monitor")
+            plt.plot(true_safety_probs,'r', label="True state monitor")
             plt.ylim(0, 1.1)
+            plt.xlabel("Time (s)")
+            plt.ylabel("Safety Estimate")
             if unsafe == 0:
                 plt.savefig(trialSafeSaveDirSafe + "/trialSafety" + str(j) + ".png")
             else:
                 plt.savefig(trialSafeSaveDirUnsafe + "/trialSafety" + str(j) + ".png")
+            
+            plt.legend(loc="lower left")
+            if unsafe == 0:
+                plt.savefig(trialSafeSaveDirSafe + "/trialSafety" + str(j) + "_noLegend.png")
+            else:
+                plt.savefig(trialSafeSaveDirUnsafe + "/trialSafety" + str(j) + "_noLegend.png")
+
             # input("Press enter to conintue")
             plt.clf()
 
 
     
-    ## TODO: add code here to save all the data to the folder to analyze later
-    with open(dataSaveDir + "allSafeProbs.pkl",'wb') as f:
-        pickle.dump(allSafeProbs,f)
-    with open(dataSaveDir + "allSafeProbsStateDist.pkl",'wb') as f:
-        pickle.dump(allSafeProbsStateDist,f)
-    with open(dataSaveDir + "allTrueSafeProbs.pkl",'wb') as f:
-        pickle.dump(allTrueSafeProbs,f)
-    with open(dataSaveDir + "allSafeProbsUnknownControl.pkl",'wb') as f:
-        pickle.dump(allSafeProbsUnknownControl,f)
-    with open(dataSaveDir + "allSafeProbsStateDistUnknownControl.pkl",'wb') as f:
-        pickle.dump(allSafeProbsStateDistUnknownControl,f)
-    with open(dataSaveDir + "allTrueSafeProbsUnknownControl.pkl",'wb') as f:
-        pickle.dump(allTrueSafeProbsUnknownControl,f)
+    # ## TODO: add code here to save all the data to the folder to analyze later
+    # with open(dataSaveDir + "allSafeProbs.pkl",'wb') as f:
+    #     pickle.dump(allSafeProbs,f)
+    # with open(dataSaveDir + "allSafeProbsStateDist.pkl",'wb') as f:
+    #     pickle.dump(allSafeProbsStateDist,f)
+    # with open(dataSaveDir + "allTrueSafeProbs.pkl",'wb') as f:
+    #     pickle.dump(allTrueSafeProbs,f)
+    # with open(dataSaveDir + "allSafeProbsUnknownControl.pkl",'wb') as f:
+    #     pickle.dump(allSafeProbsUnknownControl,f)
+    # with open(dataSaveDir + "allSafeProbsStateDistUnknownControl.pkl",'wb') as f:
+    #     pickle.dump(allSafeProbsStateDistUnknownControl,f)
+    # with open(dataSaveDir + "allTrueSafeProbsUnknownControl.pkl",'wb') as f:
+    #     pickle.dump(allTrueSafeProbsUnknownControl,f)
 
-    with open(dataSaveDir + "allSafeUnsafe.pkl",'wb') as f:
-        pickle.dump(allSafeUnsafe,f)
+    # with open(dataSaveDir + "allSafeUnsafe.pkl",'wb') as f:
+    #     pickle.dump(allSafeUnsafe,f)
     
+    # with open(dataSaveDir + "allWL1EstVars.pkl",'wb') as f:
+    #     pickle.dump(allWL1EstVars,f)
+    # with open(dataSaveDir + "allWL2EstVars.pkl",'wb') as f:
+    #     pickle.dump(allWL2EstVars,f)
 
-
+    # with open(dataSaveDir + "allPerErrs.pkl",'wb') as f:
+    #     pickle.dump(allPerErrs,f)
 
     print("Num unsafes: " + str(unsafes))
     print("Prop unsafes: " + str(unsafes/numTrials))
 
 
-    plt.hist(allPerErrs,bins=10)
-    plt.savefig("testTankSimPython.png")
-    plt.clf()
+    # plt.hist(allPerErrs,bins=10)
+    # plt.savefig("testTankSimPython.png")
+    # plt.clf()
 
     ## print perception model and save data
     err_dict = dict()
@@ -929,6 +960,20 @@ def probOfReading(wl,wlReading,mu,sigma,minValProb,maxValProb,wlMax):
     return probability
 
 
+def varianceOfStateEstimate(stateDist,wlDisc):
+
+    # compute mean
+    wlEst = 0
+    for i in range(len(stateDist)):
+        curr_wl_prob = stateDist[i]
+        curr_wl = wlDisc*i+0.5
+        wlEst = wlEst + curr_wl_prob*curr_wl
+
+    wlVar = 0
+    for i in range(len(stateDist)):
+        curr_wl_prob = stateDist[i]
+        curr_wl = (wlDisc*i+0.5 - wlEst)**2
+        wlVar = wlVar + curr_wl_prob*curr_wl
 
 
 
